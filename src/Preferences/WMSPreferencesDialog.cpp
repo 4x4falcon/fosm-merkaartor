@@ -390,7 +390,7 @@ void WMSPreferencesDialog::parseVendorSpecific(QDomElement &vendorElem)
 {
     QDomElement elem = vendorElem.firstChildElement();
     while(!elem.isNull()) {
-        if (elem.tagName() == "TileSet") {
+        if (elem.tagName().toLower() == "tileset") {
             WmscLayer aLayer;
             parseTileSet(elem, aLayer);
             if (!aLayer.LayerName.isNull())
@@ -408,15 +408,15 @@ void WMSPreferencesDialog::parseTileSet(QDomElement &tilesetElem, WmscLayer &aLa
 
     QDomElement elem = tilesetElem.firstChildElement();
     while(!elem.isNull()) {
-        if (elem.tagName() == "Layers") {
+        if (elem.tagName().toLower() == "layers") {
             aLayer.LayerName = elem.firstChild().toText().nodeValue();
-        } else if (elem.tagName() == "SRS") {
+        } else if (elem.tagName().toLower() == "srs") {
             aLayer.Projection = elem.firstChild().toText().nodeValue();
-        } else if (elem.tagName() == "Format") {
+        } else if (elem.tagName().toLower() == "format") {
             aLayer.ImgFormat = elem.firstChild().toText().nodeValue();
-        } else if (elem.tagName() == "Styles") {
+        } else if (elem.tagName().toLower() == "styles") {
             aLayer.Styles = elem.firstChild().toText().nodeValue();
-        } else if (elem.tagName() == "BoundingBox") {
+        } else if (elem.tagName().toLower() == "boundingbox") {
             QPointF tl, br;
             tl.setX(elem.attribute("minx").toDouble());
             tl.setY(elem.attribute("miny").toDouble());
@@ -428,9 +428,9 @@ void WMSPreferencesDialog::parseTileSet(QDomElement &tilesetElem, WmscLayer &aLa
             resL = elem.firstChild().toText().nodeValue().split(" ", QString::SkipEmptyParts);
             foreach(QString res, resL)
                 aLayer.Resolutions << res.toDouble();
-        } else if (elem.tagName() == "Width") {
+        } else if (elem.tagName().toLower() == "width") {
             aLayer.TileWidth = elem.firstChild().toText().nodeValue().toInt();
-        } else if (elem.tagName() == "Height") {
+        } else if (elem.tagName().toLower() == "height") {
             aLayer.TileHeight = elem.firstChild().toText().nodeValue().toInt();
         }
 

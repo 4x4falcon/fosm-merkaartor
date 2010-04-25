@@ -150,3 +150,144 @@ void TMSPreferencesDialog::savePrefs()
     M_PREFS->save();
 }
 
+void TMSPreferencesDialog::on_btGetServices_clicked()
+{
+    QUrl theUrl(edTmsUrl->text());
+    if ((theUrl.host() == "") || (theUrl.path() == "")) {
+        QMessageBox::critical(this, tr("Merkaartor: GetServices"), tr("Address and Path cannot be blank."), QMessageBox::Ok);
+    }
+
+    lvTmsServices->clear();
+
+    http = new QHttp(this);
+    connect (http, SIGNAL(requestFinished(int, bool)), this, SLOT(httpRequestFinished(int, bool)));
+    connect(http, SIGNAL(responseHeaderReceived(const QHttpResponseHeader &)),
+        this, SLOT(readResponseHeader(const QHttpResponseHeader &)));
+
+    httpGetId = sendRequest(theUrl);
+
+}
+
+int TMSPreferencesDialog::sendRequest(QUrl url)
+{
+    QString requestUrl = url.encodedPath();
+    if (!url.encodedQuery().isNull())
+        requestUrl += "?" + url.encodedQuery();
+    QHttpRequestHeader header("GET", requestUrl);
+    qDebug() << header.toString();
+    const char *userAgent = "Mozilla/9.876 (X11; U; Linux 2.2.12-20 i686, en) Gecko/25250101 Netscape/5.432b1";
+
+    QString host = url.host();
+    if (url.port() != -1)
+        host += ":" + QString::number(url.port());
+    header.setValue("Host", host);
+    header.setValue("User-Agent", userAgent);
+
+    http->setHost(url.host(), url.port() == -1 ? 80 : url.port());
+    http->setProxy(M_PREFS->getProxy(url));
+
+    return http->request(header);
+}
+
+void TMSPreferencesDialog::readResponseHeader(const QHttpResponseHeader &responseHeader)
+{
+    qDebug() << responseHeader.toString();
+    switch (responseHeader.statusCode())
+    {
+        case 200:
+            break;
+
+        case 301:
+        case 302:
+        case 307:
+            http->abort();
+            sendRequest(QUrl(responseHeader.value("Location")));
+            break;
+
+        default:
+            http->abort();
+            QMessageBox::information(this, tr("Merkaartor: GetServices"),
+                                  tr("Download failed: %1.")
+                                  .arg(responseHeader.reasonPhrase()));
+    }
+}
+
+void TMSPreferencesDialog::httpRequestFinished(int id, bool error)
+{
+    if (error) {
+        if (http->error() != QHttp::Aborted)
+            QMessageBox::critical(this, tr("Merkaartor: GetServices"), tr("Error reading services.\n") + http->errorString(), QMessageBox::Ok);
+        return;
+    }
+
+    QDomDocument doc;
+    QString content = http->readAll();
+    qDebug() << content;
+    doc.setContent(content);
+    if (doc.isNull())
+        return;
+
+    QDomElement e = doc.firstChildElement();
+    if (e.nodeName().toLower() == "services") {
+        QDomNodeList l = e.elementsByTagName("TileMapService");
+        for (int i=0; i<l.size(); ++i) {
+            QString href = l.at(i).toElement().attribute("href");
+            if (!href.isNull()) {
+                sendRequest(QUrl(href));
+            }
+        }
+    } else if (e.nodeName().toLower() == "tilemapservice") {
+        QDomNodeList l = e.elementsByTagName("TileMap");
+        for (int i=0; i<l.size(); ++i) {
+            QString href = l.at(i).toElement().attribute("href");
+            if (!href.isNull()) {
+                sendRequest(QUrl(href));
+            }
+        }
+    } else if (e.nodeName().toLower() == "tilemap") {
+        QString url;
+        QString title;
+        QString srs;
+        CoordBox bbox;
+        Coord origin;
+        QSize tilesize;
+        QString tileformat;
+        int minzoom = 9999, maxzoom = 0;
+
+        url = e.attribute("tilemapservice");
+        QDomElement c = e.firstChildElement();
+        while (!c.isNull()) {
+            if (c.nodeName().toLower() == "title") {
+                title = c.firstChild().toText().nodeValue();
+                url = url + title + "/";
+            } else if (c.nodeName().toLower() == "srs") {
+                srs = c.firstChild().toText().nodeValue();
+            } else if (c.nodeName().toLower() == "boundingbox") {
+                Coord bl(angToInt(c.attribute("miny").toDouble()), angToInt(c.attribute("minx").toDouble()));
+                Coord tr(angToInt(c.attribute("maxy").toDouble()), angToInt(c.attribute("maxx").toDouble()));
+                bbox = CoordBox(bl, tr);
+            } else if (c.nodeName().toLower() == "origin") {
+                Coord pt(angToInt(c.attribute("y").toDouble()), angToInt(c.attribute("x").toDouble()));
+                origin = pt;
+            } else if (c.nodeName().toLower() == "tileformat") {
+                tilesize.setWidth(c.attribute("width").toInt());
+                tilesize.setHeight(c.attribute("height").toInt());
+                tileformat = c.attribute("extension");
+            } else if (c.nodeName().toLower() == "tilesets") {
+                QDomElement t = c.firstChildElement();
+                while (!t.isNull()) {
+                    int o = t.attribute("order").toInt();
+                    minzoom = o < minzoom ? o : minzoom;
+                    maxzoom = o > maxzoom ? o : maxzoom;
+                    t = t.nextSiblingElement();
+                }
+            }
+            c = c.nextSiblingElement();
+        }
+        lvTmsServices->addItem(title);
+        frOSGeo->setVisible(true);
+        frOSM->setVisible(false);
+    }
+}
+
+
