@@ -21,7 +21,10 @@
 #include <QInputDialog>
 #include <QTimer>
 #include <QBuffer>
+<<<<<<< HEAD
 #include <QPair>
+=======
+>>>>>>> ongoing Navit
 
 #include <math.h>
 
