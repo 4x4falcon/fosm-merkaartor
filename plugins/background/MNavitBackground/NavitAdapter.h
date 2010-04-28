@@ -113,6 +113,7 @@ protected:
 
 private:
     QMenu* theMenu;
+    bool loaded;
 
     NavitBin navit;
 };

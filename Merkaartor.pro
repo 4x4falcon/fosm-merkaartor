@@ -1,3 +1,4 @@
 TEMPLATE = subdirs
 SUBDIRS += src \
-	plugins
+    plugins \
+    3rdparty
