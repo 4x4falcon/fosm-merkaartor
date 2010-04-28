@@ -17,10 +17,7 @@
 #include <QMessageBox>
 
 #include <QDataStream>
-<<<<<<< HEAD
 #include <QPair>
-=======
->>>>>>> ongoing Navit
 
 NavitBin::NavitBin()
 {
