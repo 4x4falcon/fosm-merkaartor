@@ -61,8 +61,8 @@ NavitAdapter::NavitAdapter()
 
     loaded = false;
 
-//    loaded = navit.setFilename("C:/home/cbro/Merkaartor/osm_bbox_11.3,47.9,11.7,48.2.bin");
-    loaded = navit.setFilename("C:/home/cbro/Merkaartor/belgium.navit.bin");
+    loaded = navit.setFilename("C:/home/cbro/Merkaartor/osm_bbox_11.3,47.9,11.7,48.2.bin");
+//    loaded = navit.setFilename("C:/home/cbro/Merkaartor/belgium.navit.bin");
 
 }
 
@@ -120,14 +120,14 @@ QString NavitAdapter::projection() const
     return "EPSG:4326";
 }
 
-QPixmap NavitAdapter::getPixmap(const QRectF& wgs84Bbox, const QRectF& projBbox, const QRect& src) const
+QPixmap NavitAdapter::getPixmap(const QRectF& wgs84Bbox, const QRectF& /*projBbox*/, const QRect& src) const
 {
-    QPixmap pix(src.size());
-    pix.fill(Qt::transparent);
-
     if (!loaded)
-        return pix;
+        return QPixmap();
 
+    qDebug() << "wgs84: " << wgs84Bbox;
+    qDebug() << "src: " << src;
+//    QRectF pBox(NavitProject(wgs84Bbox.topLeft()), NavitProject(wgs84Bbox.bottomRight()));
     QRectF pBox(NavitProject(wgs84Bbox.topLeft()), NavitProject(wgs84Bbox.bottomRight()));
 
     QList<NavitFeature> theFeats;
@@ -136,7 +136,7 @@ QPixmap NavitAdapter::getPixmap(const QRectF& wgs84Bbox, const QRectF& projBbox,
 
     qDebug () << "Feats: " << theFeats.size();
     if (!theFeats.size())
-        return pix;
+        return QPixmap();
 
     QTransform tfm;
 
@@ -155,13 +155,18 @@ QPixmap NavitAdapter::getPixmap(const QRectF& wgs84Bbox, const QRectF& projBbox,
         if (a.type == attr_street_name)
             qDebug() << "Street_name: " << a.attribute;
     }
-//    qDebug() << theFeats[0].coordinates;
-//    qDebug() << tfm.map(QPolygon(theFeats[0].coordinates));
+    qDebug() << "type: " << QString("0x%1").arg(theFeats[0].type, 0, 16);
+    qDebug() << theFeats[0].coordinates;
+    qDebug() << QPolygon(theFeats[0].coordinates).boundingRect();
+    qDebug() << tfm.map(QPolygon(theFeats[0].coordinates));
 
+    QPixmap pix(src.size());
+    pix.fill(Qt::transparent);
     QPainter P(&pix);
     P.setRenderHint(QPainter::Antialiasing);
     P.setTransform(tfm);
-    P.setPen(Qt::black);
+
+    QRect ipBox = pBox.toRect();
     foreach (NavitFeature f, theFeats) {
 //        foreach (NavitAttribute a, f.attributes) {
 //            if (a.type == attr_street_name)
@@ -170,12 +175,21 @@ QPixmap NavitAdapter::getPixmap(const QRectF& wgs84Bbox, const QRectF& projBbox,
 
         if (f.coordinates.size() > 1) {
             QPolygon d(f.coordinates);
-            if (!pBox.intersects(d.boundingRect()));
+            QRect br = d.boundingRect();
+//            qDebug() << "brect: " << br;
+            if (!(br.intersects(ipBox)))
                 continue;
-            P.drawPolygon(QPolygon(f.coordinates));
+            if ((f.type & 0xc0000000) == 0xc0000000) {
+                P.setPen(QPen(Qt::lightGray, 1));
+                P.drawPolygon(QPolygon(f.coordinates));
+            } else {
+                P.setPen(QPen(Qt::blue, 2));
+                P.drawPolyline(f.coordinates);
+            }
         } else {
             if (!pBox.contains(f.coordinates[0]))
                 continue;
+            P.setPen(QPen(Qt::red, 5));
             P.drawPoint(f.coordinates[0]);
         }
     }

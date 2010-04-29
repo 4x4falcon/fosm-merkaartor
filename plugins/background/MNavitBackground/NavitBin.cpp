@@ -123,11 +123,11 @@ bool NavitBin::getFeatures(const QString& tileRef, QList <NavitFeature>& theFeat
     readTile(tileRef);
     NavitTile t = theTiles[tileRef];
     foreach(NavitFeature f, t.features) {
-        if (f.type & 0x00010000) { // POI
+        if ((f.type & 0x00010000) == 0x00010000) { // POI
             theFeats.append(f);
-        } else if (f.type & 0x80000000) { // Line
+        } else if ((f.type & 0xc0000000) == 0xc0000000) { // Area
             theFeats.append(f);
-        } else if (f.type & 0xc0000000) { // Area
+        } else if ((f.type & 0x80000000) == 0x80000000) { // Line
             theFeats.append(f);
         }
     }
@@ -142,39 +142,38 @@ bool NavitBin::getFeatures(const QRect& pBox, QList <NavitFeature>& theFeats) co
 
     int lvl = -1;
     bool ok = false;
-    while (!ok && lvl < 14) {
+    while (lvl < 13) {
         ++lvl;
         QSize tmpSize = tileRect.size() /2;
         //        qDebug() << "ref: " << tileRef << "; rect: " << tileRect << "; sz: " << tmpSize;
         QRect c = QRect(tileRect.topLeft().x() + tmpSize.width(), tileRect.topLeft().y(), tmpSize.width(), tmpSize.height());
-        if (c.contains(pBox)) {
+        if (c.intersects(pBox)) {
             tileRect = c;
             tileRef.replace(lvl, 1, 'c');
             getFeatures(tileRef, theFeats);
             continue;
         }
         QRect d = QRect(tileRect.topLeft().x(), tileRect.topLeft().y(), tmpSize.width(), tmpSize.height());
-        if (d.contains(pBox)) {
+        if (d.intersects(pBox)) {
             tileRect = d;
             tileRef.replace(lvl, 1, 'd');
             getFeatures(tileRef, theFeats);
             continue;
         }
         QRect a = QRect(tileRect.topLeft().x() + tmpSize.width(), tileRect.topLeft().y() + tmpSize.height(), tmpSize.width(), tmpSize.height());
-        if (a.contains(pBox)) {
+        if (a.intersects(pBox)) {
             tileRect = a;
             tileRef.replace(lvl, 1, 'a');
             getFeatures(tileRef, theFeats);
             continue;
         }
         QRect b = QRect(tileRect.topLeft().x(), tileRect.topLeft().y() + tmpSize.height(), tmpSize.width(), tmpSize.height());
-        if (b.contains(pBox)) {
+        if (b.intersects(pBox)) {
             tileRect = b;
             tileRef.replace(lvl, 1, 'b');
             getFeatures(tileRef, theFeats);
             continue;
         }
-        ok = true;
     }
     qDebug() << "lvl: " << lvl << "; tile: " << tileRef << "; pbox: " << pBox;
 

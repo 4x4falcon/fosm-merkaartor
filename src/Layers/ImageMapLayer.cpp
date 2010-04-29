@@ -466,12 +466,13 @@ void ImageMapLayer::forceRedraw(MapView& theView, QRect Screen, QPoint delta)
         p->pm.fill(Qt::transparent);
     }
 
-    MapView::transformCalc(p->theTransform, p->theProjection, theView.viewport(), Screen);
+//    MapView::transformCalc(p->theTransform, p->theProjection, theView.viewport(), Screen);
 
-    QRectF fScreen(Screen);
-    p->Viewport =
-        CoordBox(p->theProjection.inverse(p->theTransform.inverted().map(fScreen.bottomLeft())),
-             p->theProjection.inverse(p->theTransform.inverted().map(fScreen.topRight())));
+//    QRectF fScreen(Screen);
+//    p->Viewport =
+//        CoordBox(p->theProjection.inverse(p->theTransform.inverted().map(fScreen.bottomLeft())),
+//             p->theProjection.inverse(p->theTransform.inverted().map(fScreen.topRight())));
+    p->Viewport = theView.viewport();
 
     p->theDelta = delta;
     if (p->theMapAdapter->getImageManager())
