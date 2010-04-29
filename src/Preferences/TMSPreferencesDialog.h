@@ -23,48 +23,39 @@
 #include <QList>
 
 /**
-    @author cbro <cbro@semperpax.com>
+	@author cbro <cbro@semperpax.com>
 */
 
 class TMSPreferencesDialog : public QDialog, public Ui::TMSPreferencesDialog
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    TMSPreferencesDialog(QWidget* parent = 0);
-    ~TMSPreferencesDialog();
+	TMSPreferencesDialog(QWidget* parent = 0);
+	~TMSPreferencesDialog();
 
-    void addServer(const TmsServer & srv);
+	void addServer(const TmsServer & srv);
 
 public slots:
-    void on_btApplyTmsServer_clicked();
-    void on_btAddTmsServer_clicked();
-    void on_btDelTmsServer_clicked();
-    void on_lvTmsServers_itemSelectionChanged();
-    void on_buttonBox_clicked(QAbstractButton * button);
-
-    void on_btGetServices_clicked();
+	void on_btApplyTmsServer_clicked();
+	void on_btAddTmsServer_clicked();
+	void on_btDelTmsServer_clicked();
+	void on_lvTmsServers_itemSelectionChanged();
+	void on_buttonBox_clicked(QAbstractButton * button);
 
 private:
-    void loadPrefs();
-    void savePrefs();
-
-    int sendRequest(QUrl url);
-
-private slots:
-    void readResponseHeader(const QHttpResponseHeader &responseHeader);
-    void httpRequestFinished(int id, bool error);
-
+	void loadPrefs();
+	void savePrefs();
 public:
-    QList<TmsServer> theTmsServers;
-    QString getSelectedServer();
-    void setSelectedServer(QString theValue);
+	QList<TmsServer> theTmsServers;
+	QString getSelectedServer();
+	void setSelectedServer(QString theValue);
 
 private:
-    QString selectedServer;
-    QHttp *http;
-    int httpGetId;
-    QBuffer* buf;
+	QString selectedServer;
+	int httpGetId;
+	QBuffer* buf;
+
 };
 
 #endif

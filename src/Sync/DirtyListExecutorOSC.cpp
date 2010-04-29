@@ -213,7 +213,7 @@ bool DirtyListExecutorOSC::stop()
                             idPrefix = "way_";
                             break;
                         case Feature::Relations:
-                            idPrefix = "rel_";
+                            idPrefix = "relation_";
                             break;
                         default:
                             break;
