@@ -289,5 +289,3 @@ void TMSPreferencesDialog::httpRequestFinished(int id, bool error)
         frOSM->setVisible(false);
     }
 }
-
-

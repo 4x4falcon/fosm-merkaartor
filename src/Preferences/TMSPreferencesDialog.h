@@ -65,7 +65,6 @@ private:
     QHttp *http;
     int httpGetId;
     QBuffer* buf;
-
 };
 
 #endif
