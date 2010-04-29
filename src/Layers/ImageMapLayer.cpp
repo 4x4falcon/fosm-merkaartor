@@ -466,7 +466,7 @@ void ImageMapLayer::forceRedraw(MapView& theView, QRect Screen, QPoint delta)
         p->pm.fill(Qt::transparent);
     }
 
-    MapView::transformCalc(p->theTransform, p->theProjection, theView.viewport(), Screen);
+//    MapView::transformCalc(p->theTransform, p->theProjection, theView.viewport(), Screen);
 
 //    QRectF fScreen(Screen);
 //    p->Viewport =
