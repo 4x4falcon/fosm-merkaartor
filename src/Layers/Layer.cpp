@@ -562,7 +562,11 @@ QString Layer::toMainHtml()
     "<small><i>" + QString(metaObject()->className()) + "</i></small><br/>"
     + desc;
     S += "<hr/>";
-    S += "<i>"+QApplication::translate("Layer", "Size")+": </i>" + QApplication::translate("Layer", "%n features", "", QCoreApplication::CodecForTr, size())+"<br/>";
+    int sz = 0;
+    foreach (Feature* f, p->Features)
+        if (!(f->isVirtual()))
+            ++sz;
+    S += "<i>"+QApplication::translate("Layer", "Size")+": </i>" + QApplication::translate("Layer", "%n features", "", QCoreApplication::CodecForTr, sz)+"<br/>";
     S += "%1";
     S += "</body></html>";
 
