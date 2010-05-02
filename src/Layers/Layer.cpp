@@ -235,7 +235,7 @@ bool Layer::isUploadable() const
 void Layer::add(Feature* aFeature)
 {
     aFeature->setLayer(this);
-    if (!aFeature->isDeleted())
+    if (!aFeature->isDeleted() && !aFeature->isVirtual())
         indexAdd(aFeature->boundingBox(), aFeature);
     p->Features.push_back(aFeature);
     notifyIdUpdate(aFeature->id(),aFeature);
@@ -257,7 +257,7 @@ void Layer::remove(Feature* aFeature)
     if (p->Features.removeOne(aFeature))
     {
         aFeature->setLayer(0);
-        if (!aFeature->isDeleted())
+        if (!aFeature->isDeleted() && !aFeature->isVirtual())
             indexRemove(aFeature->boundingBox(), aFeature);
         notifyIdUpdate(aFeature->id(),0);
     }
@@ -268,7 +268,7 @@ void Layer::deleteFeature(Feature* aFeature)
     if (p->Features.removeOne(aFeature))
     {
         aFeature->setLayer(0);
-        if (!aFeature->isDeleted())
+        if (!aFeature->isDeleted() && !aFeature->isVirtual())
             indexRemove(aFeature->boundingBox(), aFeature);
         notifyIdUpdate(aFeature->id(),0);
     }
@@ -404,17 +404,6 @@ bool Layer::isIndexingBlocked()
     return p->IndexingBlocked;
 }
 
-void Layer::blockVirtualUpdates(bool val)
-{
-    p->VirtualsUpdatesBlocked = val;
-}
-
-bool Layer::isVirtualUpdatesBlocked() const
-{
-    return p->VirtualsUpdatesBlocked;
-}
-
-
 void Layer::indexAdd(const CoordBox& bb, const MapFeaturePtr aFeat)
 {
     if (bb.isNull())
@@ -454,7 +443,7 @@ void Layer::reIndex()
     p->theRTree.RemoveAll();
 
     for (int i=0; i<p->Features.size(); ++i) {
-        if (p->Features.at(i)->isDeleted())
+        if (p->Features.at(i)->isDeleted() || p->Features.at(i)->isVirtual())
             continue;
         Feature* f = p->Features.at(i);
         CoordBox bb = f->boundingBox();
@@ -476,7 +465,7 @@ void Layer::reIndex(QProgressDialog & progress)
     progress.setValue(0);
     progress.setMaximum(p->Features.size());
     for (int i=0; i<p->Features.size(); ++i) {
-        if (!p->Features.at(i)->isDeleted()) {
+        if (!p->Features.at(i)->isDeleted() &&  !p->Features.at(i)->isVirtual()) {
             Feature* f = p->Features.at(i);
             CoordBox bb = f->boundingBox();
             if (!bb.isNull()) {
@@ -653,7 +642,6 @@ DrawingLayer * DrawingLayer::fromXML(Document* d, const QDomElement& e, QProgres
 DrawingLayer * DrawingLayer::doFromXML(DrawingLayer* l, Document* d, const QDomElement e, QProgressDialog & progress)
 {
     l->blockIndexing(true);
-    l->blockVirtualUpdates(true);
 
     l->setId(e.attribute("xml:id"));
     l->setAlpha(e.attribute("alpha").toDouble());
@@ -712,17 +700,16 @@ DrawingLayer * DrawingLayer::doFromXML(DrawingLayer* l, Document* d, const QDomE
     int savval = progress.value();
     int savmax = progress.maximum();
 
-    l->blockVirtualUpdates(false);
-    if (M_PREFS->getUseVirtualNodes()) {
-        progress.setLabelText("Updating virtual...");
-        progress.setMaximum(addedWays.size());
-        progress.setValue(0);
-        foreach (Way* value, addedWays) {
-            value->updateVirtuals();
-            progress.setValue(progress.value()+1);
-            qApp->processEvents();
-        }
-    }
+//    if (M_PREFS->getUseVirtualNodes()) {
+//        progress.setLabelText("Updating virtual...");
+//        progress.setMaximum(addedWays.size());
+//        progress.setValue(0);
+//        foreach (Way* value, addedWays) {
+//            value->updateVirtuals();
+//            progress.setValue(progress.value()+1);
+//            qApp->processEvents();
+//        }
+//    }
     l->blockIndexing(false);
 
     progress.setLabelText(savlbl);
