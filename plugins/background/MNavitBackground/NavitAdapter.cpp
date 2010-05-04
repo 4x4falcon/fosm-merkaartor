@@ -62,6 +62,7 @@ NavitAdapter::NavitAdapter()
     loaded = false;
 
     loaded = navit.setFilename("C:/home/cbro/Merkaartor/osm_bbox_11.3,47.9,11.7,48.2.bin");
+//    loaded = navit.setFilename("C:/home/cbro/Merkaartor/osm_bbox_4.2,50.7,4.6,50.9.bin");
 //    loaded = navit.setFilename("C:/home/cbro/Merkaartor/belgium.navit.bin");
 
 }
@@ -156,9 +157,9 @@ QPixmap NavitAdapter::getPixmap(const QRectF& wgs84Bbox, const QRectF& /*projBbo
             qDebug() << "Street_name: " << a.attribute;
     }
     qDebug() << "type: " << QString("0x%1").arg(theFeats[0].type, 0, 16);
-    qDebug() << theFeats[0].coordinates;
-    qDebug() << QPolygon(theFeats[0].coordinates).boundingRect();
-    qDebug() << tfm.map(QPolygon(theFeats[0].coordinates));
+    qDebug() << theFeats[10].coordinates;
+    qDebug() << QPolygon(theFeats[10].coordinates).boundingRect();
+    qDebug() << tfm.map(QPolygon(theFeats[10].coordinates));
 
     QPixmap pix(src.size());
     pix.fill(Qt::transparent);
@@ -187,10 +188,12 @@ QPixmap NavitAdapter::getPixmap(const QRectF& wgs84Bbox, const QRectF& /*projBbo
                 P.drawPolyline(f.coordinates);
             }
         } else {
-            if (!pBox.contains(f.coordinates[0]))
-                continue;
-            P.setPen(QPen(Qt::red, 5));
-            P.drawPoint(f.coordinates[0]);
+            if (f.coordinates.size() == 1) {
+                if (!pBox.contains(f.coordinates[0]))
+                    continue;
+                P.setPen(QPen(Qt::red, 5));
+                P.drawPoint(f.coordinates[0]);
+            }
         }
     }
     P.end();

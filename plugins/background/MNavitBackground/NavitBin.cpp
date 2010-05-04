@@ -92,18 +92,52 @@ bool NavitBin::readTile(QString fn) const
             data >> attrLen;
             data >> attrType;
 //            qDebug() << "-- attrType: " << QString("%1").arg(attrType, 0, 16);
-            if (type == type_submap && attrType == attr_zipfile_ref) {
-                quint32 zipref;
-                data >> zipref;
-                aTile.pointers.append(qMakePair(QRect(aFeat.coordinates[0], aFeat.coordinates[1]), zipref));
-//                qDebug() << " ------ attr_zipfile_ref: " << zipref;
-//                foreach (QPoint p, aFeat.coordinates) {
-//                    qDebug() << " -- Coord: " << p;
-//                }
+            if (type == type_submap) {
+                if (attrType == attr_zipfile_ref) {
+                    quint32 zipref;
+                    data >> zipref;
+                    if (coordLen >= 2)
+                        aTile.pointers.append(qMakePair(QRect(aFeat.coordinates[0], aFeat.coordinates[1]), zipref));
+                    else
+                        aTile.pointers.append(qMakePair(QRect(), zipref));
+                    //                qDebug() << " ------ attr_zipfile_ref: " << zipref;
+                    //                foreach (QPoint p, aFeat.coordinates) {
+                    //                    qDebug() << " -- Coord: " << p;
+                    //                }
+                } else {
+                    for (int i=0; i<(attrLen-1)*sizeof(qint32); ++i) {
+                        data >> attr;
+                        attribute.append(attr);
+                    }
+                }
             } else {
-                for (int i=0; i<(attrLen-1)*sizeof(qint32); ++i) {
-                    data >> attr;
-                    attribute.append(attr);
+                if (type == type_countryindex) {
+                    if (attrType == attr_zipfile_ref) {
+                        quint32 zipref;
+                        data >> zipref;
+                        if (coordLen >= 2)
+                            aTile.pointers.append(qMakePair(QRect(aFeat.coordinates[0], aFeat.coordinates[1]), zipref));
+                        else
+                            aTile.pointers.append(qMakePair(QRect(), zipref));
+                        //                qDebug() << " ------ attr_zipfile_ref: " << zipref;
+                        //                foreach (QPoint p, aFeat.coordinates) {
+                        //                    qDebug() << " -- Coord: " << p;
+                        //                }
+                    } else if (attrType == attr_country_id) {
+                        quint32 ctry_id;
+                        data >> ctry_id;
+                        qDebug() << "Country id: " << ctry_id;
+                    } else {
+                        for (int i=0; i<(attrLen-1)*sizeof(qint32); ++i) {
+                            data >> attr;
+                            attribute.append(attr);
+                        }
+                    }
+                } else {
+                    for (int i=0; i<(attrLen-1)*sizeof(qint32); ++i) {
+                        data >> attr;
+                        attribute.append(attr);
+                    }
                 }
                 aFeat.attributes << NavitAttribute(attrType, attribute);
             }
@@ -134,70 +168,71 @@ bool NavitBin::getFeatures(const QString& tileRef, QList <NavitFeature>& theFeat
 
 }
 
+bool NavitBin::walkTiles(const QRect& pBox, const NavitTile& theTile, QList <NavitFeature>& theFeats) const
+{
+    NavitTile t = theTile;
+    foreach(NavitFeature f, t.features) {
+        if ((f.type & 0x00010000) == 0x00010000) { // POI
+            theFeats.append(f);
+        } else if ((f.type & 0xc0000000) == 0xc0000000) { // Area
+            theFeats.append(f);
+        } else if ((f.type & 0x80000000) == 0x80000000) { // Line
+            theFeats.append(f);
+        }
+    }
+    for (int i=t.pointers.size()-1; i>=0; --i) {
+        if (t.pointers[i].first.isNull() || t.pointers[i].first.intersects(pBox)) {
+            readTile(t.pointers[i].second);
+            NavitTile ti = theTiles[tileIndex[t.pointers[i].second]];
+            walkTiles(pBox, ti, theFeats);
+        }
+    }
+    return true;
+}
+
 bool NavitBin::getFeatures(const QRect& pBox, QList <NavitFeature>& theFeats) const
 {
     QString tileRef;
     tileRef.fill('_', 14);
     QRect tileRect = QRect(QPoint(-20015087, -20015087), QPoint(20015087, 20015087));
 
-    int lvl = -1;
-    bool ok = false;
-    while (lvl < 13) {
-        ++lvl;
-        QSize tmpSize = tileRect.size() /2;
-        //        qDebug() << "ref: " << tileRef << "; rect: " << tileRect << "; sz: " << tmpSize;
-        QRect c = QRect(tileRect.topLeft().x() + tmpSize.width(), tileRect.topLeft().y(), tmpSize.width(), tmpSize.height());
-        if (c.intersects(pBox)) {
-            tileRect = c;
-            tileRef.replace(lvl, 1, 'c');
-            getFeatures(tileRef, theFeats);
-            continue;
-        }
-        QRect d = QRect(tileRect.topLeft().x(), tileRect.topLeft().y(), tmpSize.width(), tmpSize.height());
-        if (d.intersects(pBox)) {
-            tileRect = d;
-            tileRef.replace(lvl, 1, 'd');
-            getFeatures(tileRef, theFeats);
-            continue;
-        }
-        QRect a = QRect(tileRect.topLeft().x() + tmpSize.width(), tileRect.topLeft().y() + tmpSize.height(), tmpSize.width(), tmpSize.height());
-        if (a.intersects(pBox)) {
-            tileRect = a;
-            tileRef.replace(lvl, 1, 'a');
-            getFeatures(tileRef, theFeats);
-            continue;
-        }
-        QRect b = QRect(tileRect.topLeft().x(), tileRect.topLeft().y() + tmpSize.height(), tmpSize.width(), tmpSize.height());
-        if (b.intersects(pBox)) {
-            tileRect = b;
-            tileRef.replace(lvl, 1, 'b');
-            getFeatures(tileRef, theFeats);
-            continue;
-        }
-    }
-    qDebug() << "lvl: " << lvl << "; tile: " << tileRef << "; pbox: " << pBox;
-
-//    NavitTile t = indexTile;
-//    bool stop = false;
-//    while (!stop) {
-//        foreach(NavitFeature f, t.features) {
-//            if (f.type & 0x00010000) { // POI
-//                theNodes.append(qMakePair(f.type, f.coordinates.at(0)));
-//            } else if (f.type & 0x80000000) { // Line
-//                thePolys.append(qMakePair(f.type, QPolygon(f.coordinates)));
-//            } else if (f.type & 0xc0000000) { // Area
-//                thePolys.append(qMakePair(f.type, QPolygon(f.coordinates)));
-//            }
+//    int lvl = -1;
+//    bool ok = false;
+//    while (lvl < 13) {
+//        ++lvl;
+//        QSize tmpSize = tileRect.size() /2;
+//        //        qDebug() << "ref: " << tileRef << "; rect: " << tileRect << "; sz: " << tmpSize;
+//        QRect c = QRect(tileRect.topLeft().x() + tmpSize.width(), tileRect.topLeft().y(), tmpSize.width(), tmpSize.height());
+//        if (c.intersects(pBox)) {
+//            tileRect = c;
+//            tileRef.replace(lvl, 1, 'c');
+//            getFeatures(tileRef, theFeats);
+//            continue;
 //        }
-//        stop = true;
-//        for (int i=t.pointers.size()-1; i>=0; --i) {
-//            if (t.pointers[i].first.contains(box)) {
-//                readTile(t.pointers[i].second);
-//                t = theTiles[t.pointers[i].second];
-//                stop = false;
-//                break;
-//            }
+//        QRect d = QRect(tileRect.topLeft().x(), tileRect.topLeft().y(), tmpSize.width(), tmpSize.height());
+//        if (d.intersects(pBox)) {
+//            tileRect = d;
+//            tileRef.replace(lvl, 1, 'd');
+//            getFeatures(tileRef, theFeats);
+//            continue;
+//        }
+//        QRect a = QRect(tileRect.topLeft().x() + tmpSize.width(), tileRect.topLeft().y() + tmpSize.height(), tmpSize.width(), tmpSize.height());
+//        if (a.intersects(pBox)) {
+//            tileRect = a;
+//            tileRef.replace(lvl, 1, 'a');
+//            getFeatures(tileRef, theFeats);
+//            continue;
+//        }
+//        QRect b = QRect(tileRect.topLeft().x(), tileRect.topLeft().y() + tmpSize.height(), tmpSize.width(), tmpSize.height());
+//        if (b.intersects(pBox)) {
+//            tileRect = b;
+//            tileRef.replace(lvl, 1, 'b');
+//            getFeatures(tileRef, theFeats);
+//            continue;
 //        }
 //    }
-    return true;
+//    qDebug() << "lvl: " << lvl << "; tile: " << tileRef << "; pbox: " << pBox;
+
+    NavitTile t = indexTile;
+    walkTiles(pBox, t, theFeats);
 }
