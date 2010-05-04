@@ -108,8 +108,6 @@ public slots:
 
 protected:
     bool alreadyLoaded(QString fn) const;
-    bool getWalkingPapersDetails(const QUrl& reqUrl, QRectF& bbox) const;
-    bool askAndgetWalkingPapersDetails(QRectF& bbox) const;
 
 private:
     QMenu* theMenu;

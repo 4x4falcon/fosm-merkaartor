@@ -156,18 +156,22 @@ QPixmap NavitAdapter::getPixmap(const QRectF& wgs84Bbox, const QRectF& /*projBbo
         if (a.type == attr_street_name)
             qDebug() << "Street_name: " << a.attribute;
     }
-    qDebug() << "type: " << QString("0x%1").arg(theFeats[0].type, 0, 16);
-    qDebug() << theFeats[10].coordinates;
-    qDebug() << QPolygon(theFeats[10].coordinates).boundingRect();
-    qDebug() << tfm.map(QPolygon(theFeats[10].coordinates));
+//    qDebug() << "type: " << QString("0x%1").arg(theFeats[0].type, 0, 16);
+//    qDebug() << theFeats[10].coordinates;
+//    qDebug() << QPolygon(theFeats[10].coordinates).boundingRect();
+//    qDebug() << tfm.map(QPolygon(theFeats[10].coordinates));
 
     QPixmap pix(src.size());
     pix.fill(Qt::transparent);
     QPainter P(&pix);
     P.setRenderHint(QPainter::Antialiasing);
     P.setTransform(tfm);
+//    P.setClipRect(pBox);
+//    P.setClipping(true);
 
-    QRect ipBox = pBox.toRect();
+//    QRect ipBox = pBox.toRect();
+    QPainterPath clipPath;
+    clipPath.addRect(pBox);
     foreach (NavitFeature f, theFeats) {
 //        foreach (NavitAttribute a, f.attributes) {
 //            if (a.type == attr_street_name)
@@ -175,17 +179,23 @@ QPixmap NavitAdapter::getPixmap(const QRectF& wgs84Bbox, const QRectF& /*projBbo
 //        }
 
         if (f.coordinates.size() > 1) {
-            QPolygon d(f.coordinates);
-            QRect br = d.boundingRect();
+            QPolygonF d(f.coordinates);
+            QPainterPath aPath;
+            aPath.addPolygon(d);
+//            QRect br = d.boundingRect();
 //            qDebug() << "brect: " << br;
-            if (!(br.intersects(ipBox)))
-                continue;
+            aPath = aPath.intersected(clipPath);
+//            if (!aPath.intersects(pBox))
+//                continue;
             if ((f.type & 0xc0000000) == 0xc0000000) {
                 P.setPen(QPen(Qt::lightGray, 1));
-                P.drawPolygon(QPolygon(f.coordinates));
+                aPath.closeSubpath();
+                P.drawPath(aPath);
+//                P.drawPolygon(QPolygon(f.coordinates));
             } else {
                 P.setPen(QPen(Qt::blue, 2));
-                P.drawPolyline(f.coordinates);
+//                P.drawPolyline(f.coordinates);
+                P.drawPath(aPath);
             }
         } else {
             if (f.coordinates.size() == 1) {

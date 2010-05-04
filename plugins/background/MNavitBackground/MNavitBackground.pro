@@ -3,7 +3,6 @@ include(../common.pri)
 
 QT += network
 TARGET = $$qtLibraryTarget(MNavitBackgroundPlugin)
-INCLUDEPATH += $$MERKAARTOR_SRC_DIR/include/quazip
 INCLUDEPATH += $$MERKAARTOR_SRC_DIR/src
 
 HEADERS += \
@@ -23,4 +22,4 @@ win32 {
     LIBS += -L$$COMMON_DIR/lib
 }
 
-LIBS += -lquazip0
+LIBS += -lzip

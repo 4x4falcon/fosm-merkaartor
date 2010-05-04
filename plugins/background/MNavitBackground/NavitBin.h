@@ -13,8 +13,7 @@
 #ifndef NAVITBIN_H
 #define NAVITBIN_H
 
-#include <quazip/quazip.h>
-#include <quazip/quazipfile.h>
+#include <zip.h>
 
 #include <QPoint>
 #include <QPolygon>
@@ -58,36 +57,45 @@ public:
 
 public:
     quint32 type;
+    quint16 order;
     QVector<QPoint> coordinates;
     QList<NavitAttribute> attributes;
+};
+
+class NavitPointer
+{
+public:
+    QRect box;
+    quint32 zipref;
+    quint16 orderMin;
+    quint16 orderMax;
 };
 
 class NavitTile
 {
 public:
     QList<NavitFeature> features;
-    QList< QPair < QRect, quint32 > > pointers;
+    QList<NavitPointer> pointers;
 };
 
 class NavitBin
 {
 public:
     NavitBin();
+    ~NavitBin();
 
     bool setFilename(const QString& filename);
+    int locateTile(QString fn) const;
     bool readTile(int index) const;
-    bool readTile(QString fn) const;
 
-    bool getFeatures(const QString& tileRef, QList <NavitFeature>& theFeats) const;
+//    bool getFeatures(const QString& tileRef, QList <NavitFeature>& theFeats) const;
     bool walkTiles(const QRect& box, const NavitTile& t, QList <NavitFeature>& theFeats) const;
     bool getFeatures(const QRect& box, QList <NavitFeature>& theFeats) const;
 
 private:
-    QuaZip* zip;
-    QuaZipFile* file;
+    struct zip * zip;
 
-    mutable QHash<QString, NavitTile > theTiles;
-    mutable QStringList tileIndex;
+    mutable QHash<int, NavitTile> theTiles;
     NavitTile indexTile;
 };
 

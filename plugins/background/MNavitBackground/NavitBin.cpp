@@ -19,47 +19,57 @@
 #include <QDataStream>
 #include <QPair>
 
+#include <math.h>
+
 NavitBin::NavitBin()
+    : zip(NULL)
 {
+}
+
+NavitBin::~NavitBin()
+{
+    if (zip) {
+        zip_close(zip);
+        zip = NULL;
+    }
 }
 
 bool NavitBin::setFilename(const QString& filename)
 {
-    bool ok;
-    tileIndex.clear();
-
-    zip = new QuaZip(filename);
-    if(!zip->open(QuaZip::mdUnzip)) {
-        QMessageBox::critical(0,QCoreApplication::translate("NavitBackground","Not a valid file"),QCoreApplication::translate("NavitBackground","Cannot load file."));
+    zip = zip_open(filename.toUtf8().data(), 0, NULL);
+    if(!zip) {
+        QMessageBox::critical(0,QCoreApplication::translate("NavitBackground","Not a valid file"),QCoreApplication::translate("NavitBackground","Cannot open file."));
         return false;
     }
-    file = new QuaZipFile(zip);
-
-    for(bool more=zip->goToFirstFile(); more; more=zip->goToNextFile())
-        tileIndex.append(zip->getCurrentFileName());
-
-    ok = readTile("index");
-    indexTile = theTiles["index"];
-
-    return ok;
-}
-
-bool NavitBin::readTile(int index) const
-{
-    if (theTiles.contains(tileIndex[index]))
-        return true;
-
-    return readTile(tileIndex[index]);
-}
-
-bool NavitBin::readTile(QString fn) const
-{
-    qDebug() << "Reading: "  << fn;
-
-    if (!zip->setCurrentFile(fn))
+    qDebug() << "num files in zip: " << zip_get_num_files(zip);
+    int idx = locateTile("index");
+    if (idx == -1) {
+        QMessageBox::critical(0,QCoreApplication::translate("NavitBackground","Not a valid file"),QCoreApplication::translate("NavitBackground","Cannot locate index."));
         return false;
-    if(!file->open(QIODevice::ReadOnly)) {
-        QMessageBox::critical(0,QCoreApplication::translate("NavitBackground","Not a valid file"),QCoreApplication::translate("NavitBackground","Cannot load file: ").arg(file->getZipError()));
+    }
+    if (!readTile(idx)) {
+        QMessageBox::critical(0,QCoreApplication::translate("NavitBackground","Not a valid file"),QCoreApplication::translate("NavitBackground","Cannot read index."));
+        return false;
+    }
+    indexTile = theTiles[idx];
+
+    return true;
+}
+
+int NavitBin::locateTile(QString fn) const
+{
+    return zip_name_locate(zip, fn.toUtf8().data(), ZIP_FL_NOCASE | ZIP_FL_NODIR);
+}
+
+bool NavitBin::readTile(int aIndex) const
+{
+//    qDebug() << "Reading: "  << aIndex;
+
+    struct zip_stat fs;
+    zip_stat_index(zip, aIndex, ZIP_FL_NOCASE | ZIP_FL_NODIR, &fs);
+    struct zip_file* file = zip_fopen_index(zip, aIndex, ZIP_FL_NOCASE | ZIP_FL_NODIR);
+    if (!file) {
+        QMessageBox::critical(0,QCoreApplication::translate("NavitBackground","Not a valid file"),QCoreApplication::translate("NavitBackground","Cannot load file."));
         return false;
     }
 
@@ -72,8 +82,11 @@ bool NavitBin::readTile(QString fn) const
     qint32 attrLen;
     quint32 attrType;
     qint8 attr;
+    quint16 orderMin;
+    quint16 orderMax;
 
-    QByteArray ba = file->readAll();
+    QByteArray ba(fs.size, 0);
+    zip_fread(file, ba.data(), fs.size);
     QDataStream data(ba);
     data.setByteOrder(QDataStream::LittleEndian);
     while (!data.atEnd()) {
@@ -92,84 +105,130 @@ bool NavitBin::readTile(QString fn) const
             data >> attrLen;
             data >> attrType;
 //            qDebug() << "-- attrType: " << QString("%1").arg(attrType, 0, 16);
-            if (type == type_submap) {
-                if (attrType == attr_zipfile_ref) {
-                    quint32 zipref;
-                    data >> zipref;
-                    if (coordLen >= 2)
-                        aTile.pointers.append(qMakePair(QRect(aFeat.coordinates[0], aFeat.coordinates[1]), zipref));
-                    else
-                        aTile.pointers.append(qMakePair(QRect(), zipref));
-                    //                qDebug() << " ------ attr_zipfile_ref: " << zipref;
-                    //                foreach (QPoint p, aFeat.coordinates) {
-                    //                    qDebug() << " -- Coord: " << p;
-                    //                }
-                } else {
-                    for (int i=0; i<(attrLen-1)*sizeof(qint32); ++i) {
-                        data >> attr;
-                        attribute.append(attr);
-                    }
-                }
-            } else {
-                if (type == type_countryindex) {
-                    if (attrType == attr_zipfile_ref) {
+            switch (type) {
+            case type_submap: {
+                NavitPointer ptr;
+
+                switch (attrType) {
+                case attr_zipfile_ref: {
                         quint32 zipref;
                         data >> zipref;
-                        if (coordLen >= 2)
-                            aTile.pointers.append(qMakePair(QRect(aFeat.coordinates[0], aFeat.coordinates[1]), zipref));
-                        else
-                            aTile.pointers.append(qMakePair(QRect(), zipref));
-                        //                qDebug() << " ------ attr_zipfile_ref: " << zipref;
-                        //                foreach (QPoint p, aFeat.coordinates) {
-                        //                    qDebug() << " -- Coord: " << p;
-                        //                }
-                    } else if (attrType == attr_country_id) {
-                        quint32 ctry_id;
-                        data >> ctry_id;
-                        qDebug() << "Country id: " << ctry_id;
-                    } else {
-                        for (int i=0; i<(attrLen-1)*sizeof(qint32); ++i) {
-                            data >> attr;
-                            attribute.append(attr);
+                        if (coordLen >= 2) {
+                            ptr.box = QRect(aFeat.coordinates[0], aFeat.coordinates[1]);
+                            ptr.zipref = zipref;
+                        } else {
+                            ptr.box = QRect();
+                            ptr.zipref = zipref;
                         }
+                        break;
                     }
-                } else {
+
+                case attr_order: {
+                    data >> orderMin;
+                    data >> orderMax;
+                    ptr.orderMin = orderMin;
+                    ptr.orderMax = orderMax;
+                    break;
+                }
+
+                default:
                     for (int i=0; i<(attrLen-1)*sizeof(qint32); ++i) {
                         data >> attr;
                         attribute.append(attr);
                     }
+                    aFeat.attributes << NavitAttribute(attrType, attribute);
+                    break;
+                }
+                aTile.pointers.append(ptr);
+
+                break;
+            }
+
+            case type_countryindex: {
+                NavitPointer ptr;
+
+                switch (attrType) {
+                case attr_zipfile_ref: {
+                        quint32 zipref;
+                        data >> zipref;
+                        if (coordLen >= 2) {
+                            ptr.box = QRect(aFeat.coordinates[0], aFeat.coordinates[1]);
+                            ptr.zipref = zipref;
+                        } else {
+                            ptr.box = QRect();
+                            ptr.zipref = zipref;
+                        }
+                        break;
+                    }
+
+                case attr_order: {
+                    data >> orderMin;
+                    data >> orderMax;
+                    ptr.orderMin = orderMin;
+                    ptr.orderMax = orderMax;
+                    break;
+                }
+
+                case attr_country_id: {
+                    quint32 ctry_id;
+                    data >> ctry_id;
+                    qDebug() << "Country id: " << ctry_id;
+                }
+
+                default:
+                    for (int i=0; i<(attrLen-1)*sizeof(qint32); ++i) {
+                        data >> attr;
+                        attribute.append(attr);
+                    }
+                    aFeat.attributes << NavitAttribute(attrType, attribute);
+                    break;
+                }
+                aTile.pointers.append(ptr);
+
+                break;
+            }
+
+            default:
+                for (int i=0; i<(attrLen-1)*sizeof(qint32); ++i) {
+                    data >> attr;
+                    attribute.append(attr);
                 }
                 aFeat.attributes << NavitAttribute(attrType, attribute);
+                break;
             }
             j += attrLen-1;
         }
         aTile.features.append(aFeat);
     }
-    file->close();
+    zip_fclose(file);
 
-    theTiles.insert(fn, aTile);
+    theTiles[aIndex] = aTile;
 
     return true;
 }
 
-bool NavitBin::getFeatures(const QString& tileRef, QList <NavitFeature>& theFeats) const
-{
-    readTile(tileRef);
-    NavitTile t = theTiles[tileRef];
-    foreach(NavitFeature f, t.features) {
-        if ((f.type & 0x00010000) == 0x00010000) { // POI
-            theFeats.append(f);
-        } else if ((f.type & 0xc0000000) == 0xc0000000) { // Area
-            theFeats.append(f);
-        } else if ((f.type & 0x80000000) == 0x80000000) { // Line
-            theFeats.append(f);
-        }
-    }
+//bool NavitBin::getFeatures(const QString& tileRef, QList <NavitFeature>& theFeats) const
+//{
+//    readTile(tileRef);
+//    NavitTile t = theTiles[tileRef];
+//    foreach(NavitFeature f, t.features) {
+//        if ((f.type & 0x00010000) == 0x00010000) { // POI
+//            theFeats.append(f);
+//        } else if ((f.type & 0xc0000000) == 0xc0000000) { // Area
+//            theFeats.append(f);
+//        } else if ((f.type & 0x80000000) == 0x80000000) { // Line
+//            theFeats.append(f);
+//        }
+//    }
 
-}
+//}
 
 bool NavitBin::walkTiles(const QRect& pBox, const NavitTile& theTile, QList <NavitFeature>& theFeats) const
 {
+    qreal r = 40030174. / pBox.width();
+    int order = log2(r);
+    qDebug() << "order: " << order;
+
     NavitTile t = theTile;
     foreach(NavitFeature f, t.features) {
         if ((f.type & 0x00010000) == 0x00010000) { // POI
@@ -181,9 +240,9 @@ bool NavitBin::walkTiles(const QRect& pBox, const NavitTile& theTile, QList <Nav
         }
     }
     for (int i=t.pointers.size()-1; i>=0; --i) {
-        if (t.pointers[i].first.isNull() || t.pointers[i].first.intersects(pBox)) {
-            readTile(t.pointers[i].second);
-            NavitTile ti = theTiles[tileIndex[t.pointers[i].second]];
+        if (t.pointers[i].box.intersects(pBox) && order>t.pointers[i].orderMin && order<t.pointers[i].orderMax) {
+            readTile(t.pointers[i].zipref);
+            NavitTile ti = theTiles[t.pointers[i].zipref];
             walkTiles(pBox, ti, theFeats);
         }
     }
@@ -192,9 +251,15 @@ bool NavitBin::walkTiles(const QRect& pBox, const NavitTile& theTile, QList <Nav
 
 bool NavitBin::getFeatures(const QRect& pBox, QList <NavitFeature>& theFeats) const
 {
-    QString tileRef;
-    tileRef.fill('_', 14);
-    QRect tileRect = QRect(QPoint(-20015087, -20015087), QPoint(20015087, 20015087));
+    NavitTile t = indexTile;
+    return walkTiles(pBox, t, theFeats);
+}
+
+//bool NavitBin::getFeatures(const QRect& pBox, QList <NavitFeature>& theFeats) const
+//{
+//    QString tileRef;
+//    tileRef.fill('_', 14);
+//    QRect tileRect = QRect(QPoint(-20015087, -20015087), QPoint(20015087, 20015087));
 
 //    int lvl = -1;
 //    bool ok = false;
@@ -232,7 +297,4 @@ bool NavitBin::getFeatures(const QRect& pBox, QList <NavitFeature>& theFeats) co
 //        }
 //    }
 //    qDebug() << "lvl: " << lvl << "; tile: " << tileRef << "; pbox: " << pBox;
-
-    NavitTile t = indexTile;
-    walkTiles(pBox, t, theFeats);
-}
+//}
