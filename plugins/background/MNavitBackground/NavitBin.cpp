@@ -98,7 +98,8 @@ bool NavitBin::readTile(int aIndex) const
         data >> coordLen;
         for (int i=0; i<coordLen/2; ++i) {
             data >> x >> y;
-            aFeat.coordinates << QPoint(x, y);
+            if ((x && y) || type==type_submap || type==type_countryindex)
+                aFeat.coordinates << QPoint(x, y);
         }
         for (int j=2+1+coordLen; j<len; j+=2) {
             QByteArray attribute;
@@ -113,7 +114,7 @@ bool NavitBin::readTile(int aIndex) const
                 case attr_zipfile_ref: {
                         quint32 zipref;
                         data >> zipref;
-                        if (coordLen >= 2) {
+                        if (aFeat.coordinates.size() >= 2) {
                             ptr.box = QRect(aFeat.coordinates[0], aFeat.coordinates[1]);
                             ptr.zipref = zipref;
                         } else {
@@ -151,7 +152,7 @@ bool NavitBin::readTile(int aIndex) const
                 case attr_zipfile_ref: {
                         quint32 zipref;
                         data >> zipref;
-                        if (coordLen >= 2) {
+                        if (aFeat.coordinates.size() >= 2) {
                             ptr.box = QRect(aFeat.coordinates[0], aFeat.coordinates[1]);
                             ptr.zipref = zipref;
                         } else {
@@ -203,6 +204,8 @@ bool NavitBin::readTile(int aIndex) const
     zip_fclose(file);
 
     theTiles[aIndex] = aTile;
+//    foreach(NavitPointer p, aTile.pointers)
+//        qDebug() << p.orderMin;
 
     return true;
 }
@@ -223,12 +226,8 @@ bool NavitBin::readTile(int aIndex) const
 
 //}
 
-bool NavitBin::walkTiles(const QRect& pBox, const NavitTile& theTile, QList <NavitFeature>& theFeats) const
+bool NavitBin::walkTiles(const QRect& pBox, const NavitTile& theTile, int order, QList <NavitFeature>& theFeats) const
 {
-    qreal r = 40030174. / pBox.width();
-    int order = log2(r);
-    qDebug() << "order: " << order;
-
     NavitTile t = theTile;
     foreach(NavitFeature f, t.features) {
         if ((f.type & 0x00010000) == 0x00010000) { // POI
@@ -243,7 +242,7 @@ bool NavitBin::walkTiles(const QRect& pBox, const NavitTile& theTile, QList <Nav
         if (t.pointers[i].box.intersects(pBox) && order>t.pointers[i].orderMin && order<t.pointers[i].orderMax) {
             readTile(t.pointers[i].zipref);
             NavitTile ti = theTiles[t.pointers[i].zipref];
-            walkTiles(pBox, ti, theFeats);
+            walkTiles(pBox, ti, order, theFeats);
         }
     }
     return true;
@@ -252,7 +251,11 @@ bool NavitBin::walkTiles(const QRect& pBox, const NavitTile& theTile, QList <Nav
 bool NavitBin::getFeatures(const QRect& pBox, QList <NavitFeature>& theFeats) const
 {
     NavitTile t = indexTile;
-    return walkTiles(pBox, t, theFeats);
+    qreal r = 40030174. / pBox.width();
+    int order = log2(r);
+    qDebug() << "order: " << order;
+
+    return walkTiles(pBox, t, order, theFeats);
 }
 
 //bool NavitBin::getFeatures(const QRect& pBox, QList <NavitFeature>& theFeats) const

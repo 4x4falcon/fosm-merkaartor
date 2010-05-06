@@ -89,7 +89,7 @@ public:
     bool readTile(int index) const;
 
 //    bool getFeatures(const QString& tileRef, QList <NavitFeature>& theFeats) const;
-    bool walkTiles(const QRect& box, const NavitTile& t, QList <NavitFeature>& theFeats) const;
+    bool walkTiles(const QRect& box, const NavitTile& t, int order, QList <NavitFeature>& theFeats) const;
     bool getFeatures(const QRect& box, QList <NavitFeature>& theFeats) const;
 
 private:
