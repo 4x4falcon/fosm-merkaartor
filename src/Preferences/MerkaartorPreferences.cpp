@@ -976,9 +976,13 @@ QString MerkaartorPreferences::getOsmWebsite() const
 {
     QString s;
     if (!g_Merk_Ignore_Preferences && !g_Merk_Reset_Preferences)
-        s = Sets->value("osm/Website", "www.openstreetmap.org").toString();
+/****Rks****/
+//        s = Sets->value("osm/Website", "www.openstreetmap.org").toString();
+        s = Sets->value("osm/Website", "www.fosm.org").toString();
     else
-        s = "www.openstreetmap.org";
+/****Rks****/
+//        s = "www.openstreetmap.org";
+        s = "www.fosm.org";
 
 #if QT_VERSION >= 0x040600
     QUrl u = QUrl::fromUserInput(s);
