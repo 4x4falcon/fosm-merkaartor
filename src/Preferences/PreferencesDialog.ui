@@ -253,6 +253,7 @@
            </property>
           </widget>
          </item>
+
          <item>
           <widget class="QCheckBox" name="cbSimpleGpxTrack">
            <property name="text">
@@ -859,7 +860,9 @@
           </size>
          </property>
          <property name="title">
-          <string>OSM API (URL is, e.g., &quot;http://www.openstreetmap.org/api/0.6&quot;</string>
+<!--RKS-->
+<!--          <string>OSM API (URL is, e.g., &quot;http://www.openstreetmap.org/api/0.6&quot;</string>  -->
+          <string>OSM API (URL is, e.g., &quot;http://api.fosm.org/api&quot;</string>
          </property>
          <layout class="QVBoxLayout" name="OsmServersLayout"/>
         </widget>
@@ -1010,6 +1013,7 @@
             </item>
            </layout>
           </item>
+
           <item>
            <spacer>
             <property name="orientation">
