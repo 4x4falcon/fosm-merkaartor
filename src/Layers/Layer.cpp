@@ -504,7 +504,8 @@ bool DrawingLayer::toXML(QXmlStreamWriter& stream, bool asTemplate, QProgressDia
             S += QString().number(layBB.topRight().y(),'f',6) + ",";
             S += QString().number(layBB.topRight().x(),'f',6);
             stream.writeAttribute("box", S);
-            stream.writeAttribute("origin", QString("http://www.openstreetmap.org/api/%1").arg(M_PREFS->apiVersion()));
+//            stream.writeAttribute("origin", QString("http://www.openstreetmap.org/api/%1").arg(M_PREFS->apiVersion()));
+            stream.writeAttribute("origin", QString("http://api.fosm.org/api/%1").arg(M_PREFS->apiVersion()));
             stream.writeEndElement();
         }
 

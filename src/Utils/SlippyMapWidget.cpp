@@ -300,8 +300,12 @@ bool SlippyMapWidget::isDragging()
 SlippyMapCache::SlippyMapCache()
 : QObject(0), DownloadId(0), DownloadBusy(false), theMap(0)
 {
-    Download.setProxy(M_PREFS->getProxy(QUrl(QString("http://tile.openstreetmap.org"))));
-    Download.setHost("tile.openstreetmap.org");
+
+//    Download.setProxy(M_PREFS->getProxy(QUrl(QString("http://tile.openstreetmap.org"))));
+//    Download.setHost("tile.openstreetmap.org");
+
+    Download.setProxy(M_PREFS->getProxy(QUrl(QString("http://map.4x4falcon.com"))));
+    Download.setHost("map.4x4falcon.com");
 
     DownloadBuffer.setBuffer(&DownloadData);
     DownloadBuffer.open(QIODevice::WriteOnly);
@@ -412,7 +416,7 @@ void SlippyMapCache::startDownload()
             DownloadBusy = true;
             DownloadCoord = Queue[0];
             Queue.erase(Queue.begin());
-            QString Path("/%1/%2/%3.png");
+            QString Path("/default/%1/%2/%3.png");
             Path = Path.arg(DownloadCoord.Zoom).arg(DownloadCoord.X).arg(DownloadCoord.Y);
             DownloadData.clear();
             DownloadBuffer.reset();

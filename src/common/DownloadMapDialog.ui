@@ -97,7 +97,8 @@
       <item>
        <widget class="QRadioButton" name="FromMap">
         <property name="text">
-         <string>From the map below (map provided by the OpenStreetMap project)</string>
+<!--         <string>From the map below (map provided by the OpenStreetMap project)</string>  -->
+         <string>From the map below (map provided by the fosm.org project)</string>
         </property>
        </widget>
       </item>

@@ -606,7 +606,8 @@ void Document::exportOSM(QWidget* main, QIODevice* device, QList<Feature*> aFeat
     S += QString().number(aCoordBox.top(),'f',6) + ",";
     S += QString().number(aCoordBox.right(),'f',6);
     stream.writeAttribute("box", S);
-    stream.writeAttribute("origin", QString("http://www.openstreetmap.org/api/%1").arg(M_PREFS->apiVersion()));
+//    stream.writeAttribute("origin", QString("http://www.openstreetmap.org/api/%1").arg(M_PREFS->apiVersion()));
+    stream.writeAttribute("origin", QString("http://api.fosm.org/api/%1").arg(M_PREFS->apiVersion()));
     stream.writeEndElement();
 
     stream.writeEndElement();
