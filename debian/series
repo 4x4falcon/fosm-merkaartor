@@ -1,0 +1,4 @@
+0001-FIX-HSL-stuff-not-defined-in-Qt-4.6.patch
+0002-linker_fixes.patch
+0003-Fix-building-under-linux-using-pkg-config-for-libpro.patch
+libgps20_build-fix.patch

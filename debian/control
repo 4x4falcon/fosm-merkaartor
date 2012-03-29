@@ -1,0 +1,31 @@
+Source: merkaartor
+Section: science
+Priority: extra
+Maintainer: Bernd Zeimetz <bzed@debian.org>
+Build-Depends: debhelper (>= 7), quilt, zlib1g-dev,
+ libqtwebkit-dev, libqt4-dev (>= 4:4.4.3),
+ libexiv2-dev, sharutils, libgdal1-dev, libxml2-dev, libxslt1-dev,
+ libboost-dev (>= 1.38), libboost-math-dev (>= 1.38), libboost-serialization-dev (>= 1.38),
+ libgps-dev, libzbarqt-dev (>= 0.10), libzbar-dev (>= 0.10), libspatialite-dev, libproj-dev,
+ libproxy-dev
+Standards-Version: 3.8.4
+Vcs-Git: git://git.debian.org/users/bzed/merkaartor.git
+Vcs-Browser: http://git.debian.org/?p=users/bzed/merkaartor.git
+Homepage: http://www.merkaartor.org/
+
+Package: merkaartor
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Suggests: spatialite-bin
+Description: map editor for OpenStreetMap.org
+ Merkaartor is a map editor for OpenStreetMap.org, the free editable map of the
+ whole world.
+ .
+ Features:
+  * download from and upload to the OpenStreetMap server
+  * open .osm and .gpx files
+  * create and move trackpoints, ways, and areas
+  * add tags, delete features
+  * reverse, split and join ways
+  * visualize some leisure/landuse areas and road types
+  * displaying GPS information

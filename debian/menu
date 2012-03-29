@@ -1,0 +1,3 @@
+?package(merkaartor):needs="X11" section="Applications/Science/Geoscience"\
+  title="merkaartor" command="/usr/bin/merkaartor"\
+  icon="/usr/share/pixmaps/merkaartor.xpm"

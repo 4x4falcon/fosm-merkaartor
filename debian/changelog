@@ -1,0 +1,524 @@
+merkaartor (0.17.2-5) unstable; urgency=low
+
+  * [ccae59e4] Add patch to allow building against libgps20. (Closes: #648481)
+
+ -- Bernd Zeimetz <bzed@debian.org>  Sat, 12 Nov 2011 21:55:34 +0100
+
+merkaartor (0.17.2-4) unstable; urgency=low
+
+  * [e594817c] Build with libproxy for automatic proxy configuration.
+    Thanks to Jarl Friis
+  * [e9a5e253] Pull latest 0.17-fixes branch into patches.
+  * [2e5342d8] Build against libqtwebkit-dev.
+  * [27542332] Add patch to fix building with libproxy.
+
+ -- Bernd Zeimetz <bzed@debian.org>  Wed, 06 Jul 2011 22:22:10 +0200
+
+merkaartor (0.17.2-3) unstable; urgency=low
+
+  * [5fd3c0a8] Add a patch to fix linker issues.
+
+ -- Bernd Zeimetz <bzed@debian.org>  Sun, 27 Feb 2011 18:32:07 +0100
+
+merkaartor (0.17.2-2) unstable; urgency=low
+
+  * [26c92163] Work around buildd insanities from the last century. (Closes: #613440)
+
+ -- Bernd Zeimetz <bzed@debian.org>  Mon, 14 Feb 2011 23:57:09 +0100
+
+merkaartor (0.17.2-1) unstable; urgency=low
+
+  * New upstream release - 0.17.2
+  * [b3dc89d4] Merge branch 'upstream'
+
+ -- Bernd Zeimetz <bzed@debian.org>  Fri, 11 Feb 2011 14:28:38 +0100
+
+merkaartor (0.17.0-1) experimental; urgency=low
+
+  * New upstream release - 0.17.0
+  * [276b9b4c] Merge branch 'upstream'
+
+ -- Bernd Zeimetz <bzed@debian.org>  Sun, 26 Dec 2010 17:03:12 +0100
+
+merkaartor (0.17~rc4-1) experimental; urgency=low
+
+  * Git snapshot: 0.17-rc4
+  * [2bb70fbf] Merge branch 'upstream'
+
+ -- Bernd Zeimetz <bzed@debian.org>  Mon, 13 Dec 2010 22:52:28 +0100
+
+merkaartor (0.17~rc3-1) experimental; urgency=low
+
+  * Git snapshot: 0.17-rc3
+  * [bea22dfd] Merge branch 'upstream'
+
+ -- Bernd Zeimetz <bzed@debian.org>  Sun, 05 Dec 2010 22:36:30 +0100
+
+merkaartor (0.17~rc2-1) experimental; urgency=low
+
+  * Git snapshot: 0.17-rc2
+  * [d9292047] Merge branch 'upstream'
+
+ -- Bernd Zeimetz <bzed@debian.org>  Sun, 05 Dec 2010 15:34:27 +0100
+
+merkaartor (0.17~rc1-1) experimental; urgency=low
+
+  * Git snapshot: 0.17-rc1
+  * [4791e742] Merge branch 'upstream'
+
+ -- Bernd Zeimetz <bzed@debian.org>  Fri, 03 Dec 2010 14:57:45 +0100
+
+merkaartor (0.17~dev4-1) experimental; urgency=low
+
+  * [14cba520] Merge branch 'upstream'
+  * [e5f0763d] Use libproj for cartographic projections
+
+ -- Bernd Zeimetz <bzed@debian.org>  Wed, 24 Nov 2010 13:51:15 +0100
+
+merkaartor (0.17~dev3-1) experimental; urgency=low
+
+  * Git snapshot.
+  * [449d8fea] Merge branch 'upstream'
+  * [f65b7265] Enable the Spatialite plugin
+    http://www.gaia-gis.it/spatialite/
+    Upstream says: "This one is more an experiment at this time."
+
+ -- Bernd Zeimetz <bzed@debian.org>  Tue, 02 Nov 2010 12:24:41 +0100
+
+merkaartor (0.17~dev2-1) experimental; urgency=low
+
+  * Git snapshot.
+  * [7fd4c049] Merge branch 'upstream'
+  * [617550a8] Keep debug symbols in the package for experimental. A -
+    dbg package will be introduced after the release of Squeeze.
+
+ -- Bernd Zeimetz <bzed@debian.org>  Mon, 25 Oct 2010 12:42:54 +0200
+
+merkaartor (0.17~dev1-1) experimental; urgency=low
+
+  * Git snapshot.
+
+ -- Bernd Zeimetz <bzed@debian.org>  Wed, 29 Sep 2010 15:17:20 +0200
+
+merkaartor (0.16.3-1) unstable; urgency=low
+
+  * [e9c11925] Merge branch 'upstream'
+
+    Updating to version 0.16.3 - Upstream bugfix release,
+    fixing the following bugs:
+
+    v0.16.3
+        * FIX : language support broken
+    v0.16.2
+        * FIX : Initial viewport issue
+        * FIX : Do not export incomplete features
+        * FIX : CSV import bugs
+        * FIX : Use "GPX track width" setting even when not in "Simple track
+          appearance" (Merkaartor bug #3095)
+        * FIX : temporary solution for #3082
+        * CHG : Allow to pan with middle mouse button
+        * FIX : lat/lon grid Merkaartor bug for non-othogonal projections
+        * FIX : for non-rthogonal projections, maximize the viewport in lat/lon
+        * FIX : Handle empty style list in editor (Merkaartor bug #3079)
+        * FIX : Fix scale bar to take latitude into account.
+        * FIX : Do not tag-match relation's children unless the type is
+          "multippolygon" (Merkaartor bug #2916)
+        * FIX : problem with "Bottom-left standard" TMS
+        * FIX : OSX fix
+        * FIX : Draw relations children dashed to avoid multiple parent drawing
+        * FIX : Fix several issues with features dock.
+        * FIX : Fix reappearance of deleted features.
+        * FIX : Fix WayRemoveNodeCommand reversibility.
+
+ -- Bernd Zeimetz <bzed@debian.org>  Thu, 26 Aug 2010 12:56:37 +0200
+
+merkaartor (0.16.1-1) unstable; urgency=low
+
+  * [486efdb0] Merge branch 'upstream'
+    Updating to version 0.16.1.
+
+ -- Bernd Zeimetz <bzed@debian.org>  Tue, 15 Jun 2010 01:13:43 +0200
+
+merkaartor (0.16.0-1) unstable; urgency=low
+
+  * [d177c38a] Merge branch 'upstream'
+    Updating to upstream version 0.16.0.
+    The new version handles the opening of files from the command line
+    properly again, thanks to Paul Wise for the report. (Closes: #582615).
+
+ -- Bernd Zeimetz <bzed@debian.org>  Mon, 07 Jun 2010 18:55:21 +0200
+
+merkaartor (0.16~dev2-2) experimental; urgency=low
+
+  * [11dfe8e7] Build-depend on debhelper 7.
+  * [672b02c9] Use source format 1.0.
+  * [0df889e5] Remove old/unused qmake options.
+
+ -- Bernd Zeimetz <bzed@debian.org>  Tue, 25 May 2010 16:33:09 +0200
+
+merkaartor (0.16~dev2-1) experimental; urgency=low
+
+  * Git snapshot.
+  * [ef47f28a] Bump Standards-Version to 3.8.4, no changes needed.
+  * [2696e06a] Merge branch 'upstream'
+
+ -- Bernd Zeimetz <bzed@debian.org>  Tue, 25 May 2010 00:48:46 +0200
+
+merkaartor (0.16~dev1-1) experimental; urgency=low
+
+  * [d9c0ad7d] Use ZBAR=1/libzbarqt-dev to support walking-papers.
+  * [aee038e6] Disable nvidia_hack again, did not help at all.
+  * [51503a29] Update copyright file.
+  * [04b41e20] Build and install translations.
+  * [17b467a6] Bump dh compat level to 7.
+  * [965a0900] Merge branch 'upstream'
+  * [f8f234a3] Update merged gbp.conf.
+  * [8e36fedb] Make debian/rules executable.
+  * [8943dad1] Remove unnecessary lrelease call.
+  * [cc6b89f3] Require zbar version 0.10.
+
+ -- Bernd Zeimetz <bzed@debian.org>  Thu, 20 May 2010 10:40:20 +0200
+
+merkaartor (0.15.3+svn20936-1) experimental; urgency=low
+
+  * [5b46fb79] Enable gpsdlib and nvidia_hack build optins.
+  * [119a8792] Merge branch 'experimental-upstream' into experimental
+  * [5d914c06] Add libgps-dev as build-dependency.
+
+ -- Bernd Zeimetz <bzed@debian.org>  Mon, 19 Apr 2010 21:26:18 +0200
+
+merkaartor (0.15.3+svn20934-1) experimental; urgency=low
+
+  * svn snapshot.
+  * [e4450396] Add minimum requirement for libboost to control file.
+  * [d55fea41] Allow debug builds for release builds. Use
+    DEB_BUILD_OPTIONS=debug to enable.
+  * [8642266c] Merge branch 'experimental-upstream' into experimental
+  * [58dbd32e] Remove debian/uscan_repack.sh. Not needed anymore.
+  * [31a49fa5] Remote get-orig-source target.
+  * [ffe12b6a] Update gbp.conf for experimental.
+
+ -- Bernd Zeimetz <bzed@debian.org>  Mon, 19 Apr 2010 10:54:27 +0200
+
+merkaartor (0.15.3-1) unstable; urgency=low
+
+  * [fa5d9441] Merge branch 'upstream'
+    Updating to upstream release 0.15.3. This should include a fix
+    for crashes which happened while double-clicking nodes.
+    (Closes: #573237)
+
+ -- Bernd Zeimetz <bzed@debian.org>  Mon, 22 Mar 2010 17:13:26 +0100
+
+merkaartor (0.15.2-1) unstable; urgency=low
+
+  * [230e355d] Merge branch 'upstream'
+    Updating to upstream release 0.15.2.
+
+ -- Bernd Zeimetz <bzed@debian.org>  Mon, 08 Mar 2010 13:46:07 +0100
+
+merkaartor (0.15.1-1) unstable; urgency=low
+
+  * [96465283] Use merkaartor.desktop from upstream. This also avoids
+    duplicate entries in the desktop menu. (Closes: #522986) - thanks to
+    Simon Wenner
+  * [69d49210] Use NODEBUG=1 RELEASE=1 unless we build for experimental.
+    This also avoids writing log files into the user's home directory for
+    non-experimental builds (Closes: #570472)
+  * [df0f9808] Merge branch 'upstream'.
+      Updating to Merkaartor 0.15.1, which should also fix the folloing
+      bugs:
+        - fails to set bbox on WMS requests (Closes: #563322)
+        - About dialog doesn't expand properly (Closes: #570471)
+        - crash on exit while tiles are still downloading
+          (Closes: #570475)
+    Special thanks go to Paul Wise for testing the RC of Merkaartor and
+    reporting several issues, which should be all fixed now.
+  * [117fe533] Dropping gdal-config patch, applied upstream.
+  * [b703ac46] Drop zlib-include patch, not necessary anymore.
+  * [892a0b89] Create revision.h with the Debian version.
+
+ -- Bernd Zeimetz <bzed@debian.org>  Mon, 01 Mar 2010 20:12:32 +0100
+
+merkaartor (0.15~pre~svn19956-1) experimental; urgency=low
+
+  * [dbe3b91e] merkaartor needs qt4 4.4.3 at least, bump build-dep
+    accordingly.
+  * [c32e8688] Merge branch 'upstream' - update to latest svn trunk.
+  * [975f577f] Drop log-to-dev-null patch. Logging was disabled by
+    upstream.
+  * [cee6c802] Update patches for the new svn version.
+  * [ae638a32] Remove Christoph Berg from uploaders.
+  * [34b55871] Update git repository location. Moving out of collob-
+    maint.
+  * [44f13093] Patch MGdalBackground.pro to use gdal-config.
+
+ -- Bernd Zeimetz <bzed@debian.org>  Tue, 16 Feb 2010 11:30:43 +0100
+
+merkaartor (0.14+svnfixes~20090912-2) unstable; urgency=high
+
+  * [6a4e67f9] Support +svnfixes dversion in debian/watch.
+  * [00189629] Write log to /dev/null, workaround for a minor symlink
+    attack until upstream fixes it properly. (Closes: #548546) - thanks
+    to Paul Wise
+
+ -- Bernd Zeimetz <bzed@debian.org>  Thu, 15 Oct 2009 11:37:15 +0200
+
+merkaartor (0.14+svnfixes~20090912-1) unstable; urgency=low
+
+  * [f99555b6] Remove embedded code copies while repackaging.
+  * [52bf4f9b] Updating README.source - repackaging documentation.
+  * [73513824] Imported Upstream version 0.14 (Closes: #541534).
+    Thanks to Paul Wise for the help.
+  * [f0c575b1] Merge commit 'upstream/0.14'
+  * [a4d4df87] Merge commit 'remotes/origin/upstream-svn/merkaartor-
+    0.14-fixes' into upstream
+  * [764565d9] Removing embedded source copies.
+  * [e9d2c986] Merge branch 'upstream'
+  * [ab1a04df] Updating patches and debian/rules to suit 0.14.
+  * [24a6321d] Cleaning up gbp.conf.
+  * [5ac5971f] Removing backup cruft.
+  * [95193d44] Build-Deps: dropping libproj, adding libboost
+  * [43aba1e5] Move Homepage into the headers of d/control.
+  * [4cda25a0] Bumping Standards-Version to 3.8.3.
+  * [11237d62] Describing merge of fixes from svn.
+  * [36e468e6] Updating debian/copyright.
+
+ -- Bernd Zeimetz <bzed@debian.org>  Sun, 13 Sep 2009 00:52:12 +0200
+
+merkaartor (0.13.2-2) unstable; urgency=low
+
+  * [fb902c95] Disable PROJ on build until it is fixed. (Closes:
+    #536780, #528562) - thanks to James Umbanhowar and Сергей Пушкин
+
+ -- Bernd Zeimetz <bzed@debian.org>  Fri, 17 Jul 2009 00:59:21 +0200
+
+merkaartor (0.13.2-1) unstable; urgency=low
+
+  * New upstream version.
+    - Now it is possible to add comments to changesets (Closes: #525337).
+  * Updating patches to fit the new version.
+  * Don't install translations, they don't exist in the source.
+  * Drop dh_installexamples, examples were removed.
+  * Changes based on a patch by Per Hansen:
+    - Updated URL in debian/copyright
+    Closes: #525503
+  * Adding git-buildpackage config file.
+  * Updating Vcs urls after migrating to git.
+  * Updating uscan repackaging script, all we need to remove is the
+    debian directory now.
+  * Enable OSMARENDER, PROJ, GDAL, GPSD at build time (Closes: #526404). 
+  * Remove get-orig-source-svn target from debian/rules. 
+  * Cleaning up debian/rules targets - slowly preparing to move
+    to dh 7.
+  * Removing executable flags from world_shp files.
+  * Add missing build-deps on libxml2-dev, libxslt1-dev. 
+
+ -- Bernd Zeimetz <bzed@debian.org>  Sun, 03 May 2009 01:21:16 +0200
+
+merkaartor (0.13.1-1) unstable; urgency=low
+
+  * New upstream version - bugfix release:
+    - FIX : <Esc> in Name property inspector causes AV
+    - FIX : English language warning
+    - FIX : proper handling of the "Don't connect GPX nodes..." disabling.
+    - FIX : Fit the style editor in 1024x600 resolution
+    - FIX : Reflect in dirty dock the fact that multiple objects were
+            changed together
+  * debian/patches: Updating patches for new version.
+  * debian/rules:
+    - don't try to chmod files in usr/share/merkaartor/world_shp,
+      the files don't exist anymore there.
+
+ -- Bernd Zeimetz <bzed@debian.org>  Sun, 12 Apr 2009 00:40:16 +0200
+
+merkaartor (0.13-1) unstable; urgency=low
+
+  * New upstream version.
+  * debian/control:
+    - Adding libgdal1-dev as build dependency.
+    - Updating homepage url.
+    - Switching Maintainers and Uploaders as requested by
+      Christoph Berg.
+    - Bumping Standards-Version to 3.8.1.
+  * debian/patches: 
+    - Adding gdal-config patch to use gdal-config to find libs
+      and cflags.
+  * debian/copyright:
+    - Link GPL2 properly.
+    - Update Copyright of the packaging.
+  * debian/rules:
+    - Make files in /usr/share/merkaartor/world_shp/ non-executable.
+  * debian/README.source:
+    - Adding file as required by policy. 
+
+ -- Bernd Zeimetz <bzed@debian.org>  Thu, 19 Mar 2009 14:25:26 +0100
+
+merkaartor (0.12+svn13563-1) experimental; urgency=low
+
+  * Updating to latest svn revision.
+  * debian/rules: Using new translations path, thanks to Per Hansen
+    for the report.
+
+ -- Bernd Zeimetz <bzed@debian.org>  Fri, 06 Feb 2009 15:23:57 +0100
+
+merkaartor (0.12+svn13050-1) experimental; urgency=low
+
+  * Updating to the latest svn revision.
+
+ -- Bernd Zeimetz <bzed@debian.org>  Fri, 09 Jan 2009 01:09:01 +0100
+
+merkaartor (0.12-1) unstable; urgency=low
+
+  * New upstream version.
+  * Uploading to unstable again.
+  * debian/watch:
+    - Chainging URLs to point to the new upstream homepage - merkaartor.org. 
+
+ -- Bernd Zeimetz <bzed@debian.org>  Wed, 15 Oct 2008 18:01:50 +0200
+
+merkaartor (0.12~svn11021-2) experimental; urgency=low
+
+  * Updating to the latest svn revision, includes KML support.
+
+ -- Bernd Zeimetz <bzed@debian.org>  Thu, 02 Oct 2008 15:47:00 +0200
+
+merkaartor (0.12~svn10948-1) experimental; urgency=low
+
+  * Updating to the latest svn revision.
+
+ -- Bernd Zeimetz <bzed@debian.org>  Tue, 16 Sep 2008 00:42:43 +0200
+
+merkaartor (0.12~svn10696-1) experimental; urgency=low
+
+  * Updating to the latest svn revision. Includes a fix for a segfault
+    which happened on upload sometimes.
+  * debian/rules:
+    - Updating get-orig-source-svn: webkit is not pulled in as external
+      source anymore, so there's no need to remove it.
+
+ -- Bernd Zeimetz <bzed@debian.org>  Sat, 06 Sep 2008 16:47:59 +0200
+
+merkaartor (0.12~svn10486-1) experimental; urgency=low
+
+  * Updating our version numbers to suit upstream's numbering again.
+  * debian/control:
+    - Adding libexiv2-dev to build dependencies.
+    - Bumping Standards-Version to 3.8.0, no changes needed.
+  * debian/rules:
+    - Using GEOIMAGE=1 as option to qmake to Support GeoTagged images.
+
+ -- Bernd Zeimetz <bzed@debian.org>  Thu, 04 Sep 2008 22:48:25 +0200
+
+merkaartor (0.0.12~svn10441-2) experimental; urgency=low
+
+  * debian/rules:
+    - make install still does not install the translations, taking
+      care of that again.
+
+ -- Bernd Zeimetz <bzed@debian.org>  Wed, 03 Sep 2008 21:47:55 +0200
+
+merkaartor (0.0.12~svn10441-1) experimental; urgency=low
+
+  * debian/rules:
+    - Adding NOWEBKIT=1 option to the qmake call as we use webkit from qt4.
+    - Adding PREFIX=/usr option to the qmake call so we're able to use
+      make install later.
+    - Adding get-orig-source-svn target to build a tarball from svn. While
+      packaging the tarball webkit and upstream's debian directory are
+      removed, too. 
+    - Adding get-orig-source target which uses uscan to download and
+      repackage upstream's tarball.
+    - Installing icons and desktop file.
+    - Using make install instead of manually copying the files.
+  * debian/control:
+    - Adding myself to Uploaders.
+    - Adding a versioned dependency for libqt4-dev as we need webkit
+      in qt4.
+    - Adding sharutils as build dependency.
+    - Updating Description.
+  * debian/patches:
+    - Removing gcc-4.3-cast, patched code was removed by upstream.
+  * debian/{prerm,docs,postinst}:
+    - Removing files, not needed anymore.
+  * debian/merkaartor.png.b64:
+    - Adding file, created from Icons/Mercator_large.xcf using The Gimp,
+      base64 encoded using uuencode -m.
+  * debian/merkaartor.desktop:
+    - Adding file.
+  * debian/menu:
+    - Configuring icon.
+  * debian/watch, debian/uscan_repack.sh:
+    - Updating upstream URL
+    - Adding debian/uscan_repack.sh which is called by uscan to repack
+      the upstream tarball, which contains an embedded copy of Qt's
+      webkit and upstream's debian folder - both are removed.
+
+ -- Bernd Zeimetz <bzed@debian.org>  Wed, 03 Sep 2008 01:10:24 +0200
+
+merkaartor (0.0.11~svn7913-2) unstable; urgency=low
+
+  * Explicitely call qmake-qt4. (Closes: #495807)
+
+ -- Christoph Berg <myon@debian.org>  Sat, 23 Aug 2008 13:46:25 +0200
+
+merkaartor (0.0.11~svn7913-1) unstable; urgency=low
+
+  * New upstream snapshot (as native package, make dist is broken).
+    + Fixes incompatibility with Qt4.3. (Closes: #478173)
+  * Install and enable translations.
+  * Use quilt.
+  * Put parentheses around a cast to make it compile with gcc-4.3 on armel.
+
+ -- Christoph Berg <myon@debian.org>  Sat, 24 May 2008 16:41:53 +0200
+
+merkaartor (0.0.10-1) unstable; urgency=low
+
+  * New upstream release
+  * Add watch file.
+
+ -- Christoph Berg <myon@debian.org>  Sun, 06 Apr 2008 11:52:21 +0200
+
+merkaartor (0.0.9-2) unstable; urgency=low
+
+  * Initial Debian upload. (Closes: #452703)
+
+ -- Christoph Berg <myon@debian.org>  Thu, 28 Feb 2008 21:43:40 +0100
+
+merkaartor (0.0.9-1) gutsy; urgency=low
+
+  * Upgrade to 0.0.9
+
+ -- Bart Vanhauwaert <bvh-osm@irule.be>  Fri, 04 Jan 2008 16:00:38 +0100
+
+merkaartor (0.0.8-1) gutsy; urgency=low
+
+  * Upgrade to version 0.0.8. Works with OpenStreetMap API 0.5
+
+ -- Bart Vanhauwaert <bvh-osm@irule.be>  Mon, 05 Nov 2007 22:38:06 +0100
+
+merkaartor (0.0.7-1) feisty; urgency=low
+
+  * Upgrade to version 0.0.7
+
+ -- Bart Vanhauwaert <bvh-osm@irule.be>  Sat, 18 Aug 2007 18:04:49 +0200
+
+merkaartor (0.0.6-1) unstable; urgency=low
+
+  * Upgrade to version 0.0.6 
+
+ -- Bart Vanhauwaert <bvh-osm@irule.be>  Wed,  6 Dec 2006 17:59:51 +0100
+
+merkaartor (0.0.5-1) unstable; urgency=low
+
+  * Upgrade to version 0.0.5
+
+ -- Bart Vanhauwaert <bvh-osm@irule.be>  Thu, 16 Nov 2006 14:58:21 +0100
+
+merkaartor (0.0.4-1) unstable; urgency=low
+
+  * Initial release
+
+ -- Bart Vanhauwaert <bvh-osm@irule.be>  Sat, 28 Oct 2006 12:59:04 +0200
+
+
+

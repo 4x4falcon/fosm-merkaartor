@@ -1,0 +1,18 @@
+merkaartor (0.14+svnfixes~20090912-1) unstable; urgency=low
+
+  * Since upstream version 0.14, the embedded boost copy
+    and the unused S60extensions are removed while repackaging
+    the upstream source.
+  * Upstream fixes are merged from the according svn branch.
+
+ -- Bernd Zeimetz <bzed@debian.org>  Sun, 16 Aug 2009 17:58:13 +0200
+
+merkaartor (0.13-1) unstable; urgency=low
+
+  * The packaging of merkaartor uses quilt to manage patches
+    at build time. Please install the package 'quilt' and see
+    /usr/share/doc/quilt/README.source
+    for details.
+
+ -- Bernd Zeimetz <bzed@debian.org>  Thu, 19 Mar 2009 10:48:19 +0100
+
