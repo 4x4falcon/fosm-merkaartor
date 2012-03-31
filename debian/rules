@@ -74,6 +74,9 @@ install: build
 			 $(CURDIR)/debian/merkaartor/usr/share/applications/merkaartor.desktop
 
 
+get-deps:
+	apt-get install libexiv2-dev sharutils libgdal1-dev libxslt1-dev libboost-dev libboost-math-dev libboost-serialization-dev libgps-dev libzbarqt-dev libzbar-dev libspatialite-dev libproj-dev libproxy-dev quilt
+
 binary-indep:
 	#nothing to do.
 
@@ -93,7 +96,7 @@ binary-arch: install
 	dh_md5sums
 	dh_builddeb
 
-binary: binary-arch binary-indep
+binary: get-deps binary-arch binary-indep
 
 .PHONY: build clean binary-indep binary-arch binary binary-indep install configure get-orig-source
 
