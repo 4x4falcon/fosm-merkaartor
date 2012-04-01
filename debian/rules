@@ -1,0 +1,102 @@
+#!/usr/bin/make -f
+
+include /usr/share/quilt/quilt.make
+
+DISTRIBUTION = $(shell dpkg-parsechangelog | grep '^Distribution:')
+ifneq (,$(findstring experimental,$(DISTRIBUTION)))
+RELEASEFLAGS = NODEBUG=0 RELEASE=0
+DEB_BUILD_OPTIONS += ,nostrip,noopt
+else
+ifneq (,$(findstring debug,$(DEB_BUILD_OPTIONS)))
+RELEASEFLAGS = NODEBUG=0 RELEASE=1
+else
+RELEASEFLAGS = NODEBUG=1 RELEASE=1
+endif
+endif
+
+SVNREV = $(shell dpkg-parsechangelog | grep '^Version' | sed 's,Version:,Debian,')
+
+CFLAGS = -Wall -g
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -O0
+else
+	CFLAGS += -O2
+endif
+
+configure: configure-stamp
+configure-stamp: $(QUILT_STAMPFN)
+	dh_testdir
+	echo '#define SVNREV $(SVNREV)' > src/revision.h
+	cd translations && make release
+	qmake-qt4 Merkaartor.pro NOWEBKIT=1 \
+			TRANSDIR_SYSTEM="/usr/share/qt4/translations/" \
+			PREFIX=/usr \
+			GEOIMAGE=1 \
+			PROJ=1 \
+			GDAL=1 \
+			GPSDLIB=1 \
+			ZBAR=1 \
+			SPATIALITE=1 \
+			LIBPROXY=1 \
+			$(RELEASEFLAGS)
+	touch configure-stamp
+
+build: build-stamp
+build-stamp: configure-stamp
+	dh_testdir
+	$(MAKE)
+	uudecode debian/merkaartor.png.b64
+	touch $@
+
+clean: clean-patched unpatch
+clean-patched: 
+	dh_testdir
+	dh_testroot
+	dh_clean
+	rm -f build-stamp configure-stamp
+	 cd translations && make clean
+	[ ! -f Makefile ] || $(MAKE) distclean
+	rm -f merkaartor.png
+	rm -rf binaries
+	rm -f src/revision.h
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_prep
+	make install INSTALL_ROOT=$(CURDIR)/debian/merkaartor
+	install -d $(CURDIR)/debian/merkaartor/usr/share/pixmaps
+	install -D -m644 $(CURDIR)/Icons/Merkaartor.xpm \
+	   $(CURDIR)/debian/merkaartor/usr/share/pixmaps/merkaartor.xpm
+	install -D -m644 $(CURDIR)/merkaartor.png \
+			 $(CURDIR)/debian/merkaartor/usr/share/icons/merkaartor.png
+	install -D -m644 $(CURDIR)/src/merkaartor.desktop \
+			 $(CURDIR)/debian/merkaartor/usr/share/applications/merkaartor.desktop
+
+
+get-deps:
+	apt-get install libexiv2-dev sharutils libgdal1-dev libxslt1-dev libboost-dev libboost-math-dev libboost-serialization-dev libgps-dev libzbarqt-dev libzbar-dev libspatialite-dev libproj-dev libproxy-dev quilt
+
+binary-indep:
+	#nothing to do.
+
+binary-arch: install
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs CHANGELOG
+	dh_installdocs
+	dh_installmenu
+	dh_installman debian/merkaartor.1
+	dh_strip
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: get-deps binary-arch binary-indep
+
+.PHONY: build clean binary-indep binary-arch binary binary-indep install configure get-orig-source
+

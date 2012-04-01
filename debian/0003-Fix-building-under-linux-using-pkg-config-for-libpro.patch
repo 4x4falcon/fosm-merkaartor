@@ -1,0 +1,49 @@
+From: Bernd Zeimetz <bernd@bzed.de>
+Date: Tue, 5 Jul 2011 23:03:14 +0200
+Subject: Fix building under linux using pkg-config for libproxy.
+
+Please note that this might not work on windows - adding
+proper cflags should be necessary now. Nothign I can test here :)
+---
+ src/Preferences/MerkaartorPreferences.h |    2 +-
+ src/Preferences/Preferences.pri         |   12 ++++++++++--
+ 2 files changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/src/Preferences/MerkaartorPreferences.h b/src/Preferences/MerkaartorPreferences.h
+index cb4b763..9ea81c0 100644
+--- a/src/Preferences/MerkaartorPreferences.h
++++ b/src/Preferences/MerkaartorPreferences.h
+@@ -21,7 +21,7 @@
+ #include <QNetworkProxy>
+ 
+ #ifdef USE_LIBPROXY
+-#include <libproxy/proxy.h>
++#include <proxy.h>
+ #endif
+ 
+ #include "Maps/Coord.h"
+diff --git a/src/Preferences/Preferences.pri b/src/Preferences/Preferences.pri
+index 643c639..8dc2a3b 100644
+--- a/src/Preferences/Preferences.pri
++++ b/src/Preferences/Preferences.pri
+@@ -1,9 +1,17 @@
+ INCLUDEPATH += Preferences
+ DEPENDPATH += Preferences
+-contains(LIBPROXY, 1) { 
++
++contains(LIBPROXY, 1) {
+     DEFINES += USE_LIBPROXY
+-    LIBS += -lproxy
++    unix {
++        CONFIG += link_pkgconfig
++        PKGCONFIG += libproxy-1.0
++    }
++    win32 {
++       LIBS += -lproxy
++    }
+ }
++
+ HEADERS += MerkaartorPreferences.h \
+     PreferencesDialog.h \
+     WMSPreferencesDialog.h \
+-- 

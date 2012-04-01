@@ -1,0 +1,29 @@
+From: Bernd Zeimetz <bzed@debian.org>
+Date: Tue, 5 Jul 2011 22:16:57 +0200
+Subject: linker_fixes
+
+---
+ src/src.pro |    9 +++++++++
+ 1 files changed, 9 insertions(+), 0 deletions(-)
+
+diff --git a/src/src.pro b/src/src.pro
+index 201420b..b1ebcee 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -189,6 +189,15 @@ win32 {
+     }
+ }
+ 
++
++unix {
++    CONFIG += link_pkgconfig
++    PKGCONFIG += sqlite3
++}
++win32 {
++    LIBS += -lsqlite3
++}
++
+ DEFINES += SHARE_DIR=$${SHARE_DIR}
+ INSTALLS += target
+ 
+-- 

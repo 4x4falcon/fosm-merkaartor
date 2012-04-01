@@ -369,7 +369,7 @@ bool TrackSegment::toGPX(QXmlStreamWriter& stream, QProgressDialog * progress, b
     return OK;
 }
 
-bool TrackSegment::toXML(QXmlStreamWriter& stream, QProgressDialog * progress, bool, QString)
+bool TrackSegment::toXML(QXmlStreamWriter& stream, QProgressDialog * progress, bool, QString,QString)
 {
     return toGPX(stream, progress, false);
 }

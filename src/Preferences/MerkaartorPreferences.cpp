@@ -1008,6 +1008,7 @@ QString MerkaartorPreferences::getOsmWebsite() const
     if (!u.path().isEmpty())
         u.setPath("");
 
+    qDebug() << "getOsmWebsite " << u.toString();
     return u.toString();
 }
 
@@ -1018,13 +1019,22 @@ QString MerkaartorPreferences::getOsmApiUrl() const
     if (u.path().isEmpty())
         u.setPath("/api/" + apiVersion());
 
+    qDebug() << "getOsmApiUrl " << u.toString();
+
     return u.toString();
 }
 
 void MerkaartorPreferences::setOsmWebsite(const QString & theValue)
 {
     if (!g_Merk_Ignore_Preferences)
+      {
         Sets->setValue("osm/Website", theValue);
+        qDebug() << "setting osm website " << theValue;
+      }
+    else
+      {
+        qDebug() << "not osm website for some reason ";
+      }
 }
 
 M_PARAM_IMPLEMENT_STRING(XapiUrl, osm, "http://www.informationfreeway.org/api/0.6")

@@ -798,12 +798,13 @@ bool Way::toGPX(QXmlStreamWriter& stream, QProgressDialog * progress, bool forEx
     return OK;
 }
 
-bool Way::toXML(QXmlStreamWriter& stream, QProgressDialog * progress, bool strict, QString changetsetid)
+bool Way::toXML(QXmlStreamWriter& stream, QProgressDialog * progress, bool strict, QString changetsetid, QString action)
 {
     bool OK = true;
 
     stream.writeStartElement("way");
-    Feature::toXML(stream, strict, changetsetid);
+
+    Feature::toXML(stream, strict, changetsetid,action);
 
     // Has to be first to be picked up when reading back
     if (!strict)

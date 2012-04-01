@@ -874,7 +874,7 @@ void Feature::fromXML(QXmlStreamReader& stream, Feature* F)
 //        g_Merk_MainWindow->properties()->addSelection(F);
 }
 
-void Feature::toXML(QXmlStreamWriter& stream, bool strict, QString changetsetid)
+void Feature::toXML(QXmlStreamWriter& stream, bool strict, QString changetsetid, QString action)
 {
     stream.writeAttribute("id", xmlId());
 #ifndef FRISIUS_BUILD
@@ -884,6 +884,11 @@ void Feature::toXML(QXmlStreamWriter& stream, bool strict, QString changetsetid)
 #endif
     if (!changetsetid.isEmpty())
         stream.writeAttribute("changeset", changetsetid);
+
+    if (!action.isEmpty())     { // for FOSM
+        stream.writeAttribute("action",action);
+      }
+
     if (!strict) {
         stream.writeAttribute("actor", QString::number((int)lastUpdated()));
         if (isDeleted())

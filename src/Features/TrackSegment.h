@@ -56,7 +56,7 @@ public:
 
     virtual bool toGPX(QXmlStreamWriter& stream, QProgressDialog * progress, bool forExport=false);
     static TrackSegment* fromGPX(Document* d, Layer* L, QXmlStreamReader& stream, QProgressDialog * progress);
-    virtual bool toXML(QXmlStreamWriter& stream, QProgressDialog * progress, bool strict=false,QString changetsetid="");
+    virtual bool toXML(QXmlStreamWriter& stream, QProgressDialog * progress, bool strict=false,QString changetsetid="",QString action="");
     static TrackSegment* fromXML(Document* d, Layer* L, QXmlStreamReader& stream, QProgressDialog * progress);
 
     virtual QString toHtml() {return "";}

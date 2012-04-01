@@ -108,8 +108,11 @@ QByteArray DirtyListExecutorOSC::getChanges()
     Progress->show();
 
     OscBuffer.buffer().clear();
+
+
     OscBuffer.open(QIODevice::WriteOnly);
 
+    OscStream.setAutoFormatting(1); // autoformat 
     OscStream.setDevice(&OscBuffer);
     OscStream.writeStartDocument();
 
@@ -156,6 +159,7 @@ bool DirtyListExecutorOSC::executeChanges(QWidget* aParent)
     {
         OscBuffer.buffer().clear();
         OscBuffer.open(QIODevice::WriteOnly);
+        OscStream.setAutoFormatting(1); // autoformat 
         OscStream.setDevice(&OscBuffer);
         OscStream.writeStartDocument();
 
@@ -256,6 +260,9 @@ bool DirtyListExecutorOSC::stop()
     }
 
     case 409: {    // Confilct
+      // lets see some results
+      qDebug() << "ConflictMessage " << DataOut;
+
 //            QRegExp rx(".*node.*(\\d+)", Qt::CaseInsensitive);
 //            if (rx.indexIn(DataOut) > -1) {
 //                errFeat = "node_" + rx.cap(1);
@@ -318,7 +325,7 @@ void DirtyListExecutorOSC::OscCreate(Feature* F)
         LastAction = "create";
     }
 
-    F->toXML(OscStream, Progress, true, ChangeSetId);
+    F->toXML(OscStream, Progress, true, ChangeSetId,"create");
 }
 
 void DirtyListExecutorOSC::OscModify(Feature* F)
@@ -330,7 +337,7 @@ void DirtyListExecutorOSC::OscModify(Feature* F)
         LastAction = "modify";
     }
 
-    F->toXML(OscStream, Progress, true, ChangeSetId);
+    F->toXML(OscStream, Progress, true, ChangeSetId,"modify");
 }
 
 void DirtyListExecutorOSC::OscDelete(Feature* F)
@@ -342,7 +349,7 @@ void DirtyListExecutorOSC::OscDelete(Feature* F)
         LastAction = "modify";
     }
 
-    F->toXML(OscStream, Progress, true, ChangeSetId);
+    F->toXML(OscStream, Progress, true, ChangeSetId,"delete");
 }
 
 

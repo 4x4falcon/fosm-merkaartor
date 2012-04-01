@@ -267,7 +267,7 @@ void Node::updateMeta()
     }
 }
 
-bool Node::toXML(QXmlStreamWriter& stream, QProgressDialog * progress, bool strict, QString changesetid)
+bool Node::toXML(QXmlStreamWriter& stream, QProgressDialog * progress, bool strict, QString changesetid, QString action)
 {
     bool OK = true;
 
@@ -276,7 +276,8 @@ bool Node::toXML(QXmlStreamWriter& stream, QProgressDialog * progress, bool stri
 
     stream.writeStartElement("node");
 
-    Feature::toXML(stream, strict, changesetid);
+    Feature::toXML(stream, strict, changesetid,action);
+      
     stream.writeAttribute("lon",COORD2STRING(BBox.topRight().x()));
     stream.writeAttribute("lat", COORD2STRING(BBox.topRight().y()));
 

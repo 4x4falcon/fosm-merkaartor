@@ -1,0 +1,3 @@
+version=3
+opts=dversionmangle=s/\+svnfixes~[0-9]*$// \
+http://www.merkaartor.org/Download/ .*/downloads/source/merkaartor-(.*)\.tar\.bz2 debian debian/uscan_repack.sh
