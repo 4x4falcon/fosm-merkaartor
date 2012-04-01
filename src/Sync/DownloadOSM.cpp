@@ -327,9 +327,9 @@ void Downloader::progress(int done, int total)
     if (AnimatorLabel && AnimatorBar)
     {
         if (done < 10240)
-            AnimatorLabel->setText(tr("Downloading from OSM (%n bytes)", "", done));
+            AnimatorLabel->setText(tr("Downloading from FOSM (%n bytes)", "", done));
         else
-            AnimatorLabel->setText(tr("Downloading from OSM (%n kBytes)", "", (done/1024)));
+            AnimatorLabel->setText(tr("Downloading from FOSM (%n kBytes)", "", (done/1024)));
         if (AnimationTimer && total != 0)
         {
             SAFE_DELETE(AnimationTimer);
