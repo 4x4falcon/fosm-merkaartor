@@ -12,6 +12,7 @@
 #include "LineF.h"
 
 #include "Global.h"
+#include "MainWindow.h"
 
 #include <QApplication>
 #include <QMultiMap>
@@ -151,11 +152,15 @@ bool Layer::isUploadable() const
 
 void Layer::add(Feature* aFeature)
 {
-    aFeature->setLayer(this);
-    p->Features.push_back(aFeature);
-    g_backend.sync(aFeature);
-    aFeature->invalidateMeta();
-    notifyIdUpdate(aFeature->id(),aFeature);
+    if (aFeature) {
+        aFeature->setLayer(this);
+        p->Features.push_back(aFeature);
+        g_backend.sync(aFeature);
+        aFeature->invalidateMeta();
+        notifyIdUpdate(aFeature->id(),aFeature);
+    } else {
+        qDebug() << "Layer::add: logic error, no featured passed";
+    }
 }
 
 void Layer::remove(Feature* aFeature)
@@ -182,10 +187,7 @@ void Layer::clear()
 {
     while (p->Features.count())
     {
-        g_backend.sync(p->Features[0]);
-        p->Features[0]->setLayer(0);
-        notifyIdUpdate(p->Features[0]->id(),0);
-        p->Features.removeAt(0);
+        remove(p->Features[0]);
     }
 }
 
@@ -803,6 +805,29 @@ TrackLayer * TrackLayer::fromXML(Document* d, QXmlStreamReader& stream, QProgres
         stream.readNext();
     }
     return l;
+}
+
+// SpecialLayer
+
+SpecialLayer::SpecialLayer(const QString &aName, Layer::LayerType type, const QString &filename)
+    : TrackLayer(aName, filename), m_type(type)
+{
+    setReadonly(true);
+}
+
+LayerWidget* SpecialLayer::newWidget(void)
+{
+    theWidget = new SpecialLayerWidget(this);
+    return theWidget;
+}
+
+void SpecialLayer::refreshLayer()
+{
+    if (m_type == Layer::OsmBugsLayer) {
+        g_Merk_MainWindow->on_layersOpenstreetbugsAction_triggered();
+    } else if (m_type == Layer::MapDustLayer) {
+        g_Merk_MainWindow->on_layersMapdustAction_triggered();
+    }
 }
 
 // DirtyLayer
