@@ -1029,9 +1029,6 @@
             </item>
            </layout>
           </item>
-<<<<<<< HEAD
-
-=======
          </layout>
         </widget>
        </item>
@@ -1041,7 +1038,6 @@
           <string>GDAL</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_10">
->>>>>>> upstream/master
           <item>
            <widget class="QCheckBox" name="cbGdalConfirmProjection">
             <property name="text">
